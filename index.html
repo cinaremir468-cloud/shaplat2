@@ -668,7 +668,7 @@
             <div class="search-overlay">
                 <div class="search-bar">
                     <span style="font-size: 20px;">🔍</span>
-                    <input type="text" id="searchInput" placeholder="Ülke veya şehir ara..." oninput="searchOnMap()">
+                    <input type="text" id="searchInput" placeholder="Ülke veya şehir ara...">
                 </div>
             </div>
             <div id="mapContainer"></div>
@@ -810,24 +810,24 @@
 
     <script>
         // Global Variables
-        let currentUser = null;
-        let cities = {};
-        let users = {};
-        let transactions = [];
-        let marketOrders = [];
-        let selectedCity = null;
-        let isDrawing = false;
-        let currentColor = '#FF0000';
-        let mapRoot = null;
-        let mapChart = null;
-        let worldSeries = null;
-        let citySeries = null;
-        let backContainer = null;
-        const canvas = document.getElementById('flagCanvas');
-        const ctx = canvas ? canvas.getContext('2d') : null;
+        var currentUser = null;
+        var cities = {};
+        var users = {};
+        var transactions = [];
+        var marketOrders = [];
+        var selectedCity = null;
+        var isDrawing = false;
+        var currentColor = '#FF0000';
+        var mapRoot = null;
+        var mapChart = null;
+        var worldSeries = null;
+        var citySeries = null;
+        var backContainer = null;
+        var canvas = document.getElementById('flagCanvas');
+        var ctx = canvas ? canvas.getContext('2d') : null;
 
         // City Data by Country
-        const cityDataByCountry = {
+        var cityDataByCountry = {
             'TR': [
                 { name: 'İstanbul', lat: 41.0082, lon: 28.9784, price: 5000 },
                 { name: 'Ankara', lat: 39.9334, lon: 32.8597, price: 3000 },
@@ -871,10 +871,10 @@
         // Initialize Cities
         function initDemoData() {
             cities = {};
-            let cityId = 0;
-            for (let country in cityDataByCountry) {
-                cityDataByCountry[country].forEach(cityInfo => {
-                    const id = 'city_' + cityId++;
+            var cityId = 0;
+            for (var country in cityDataByCountry) {
+                cityDataByCountry[country].forEach(function(cityInfo) {
+                    var id = 'city_' + cityId++;
                     cities[id] = {
                         id: id,
                         name: cityInfo.name,
@@ -923,27 +923,27 @@
                 fill: am5.color(0x555555),
                 strokeWidth: 0.5,
                 stroke: am5.color(0x000000)
-            }));
+            });
 
             worldSeries.mapPolygons.template.states.create("hover", {
                 fill: am5.color(0x667eea)
             });
 
             // Country Click Event
-            worldSeries.mapPolygons.template.events.on("click", (ev) => {
-                const dataItem = ev.target.dataItem;
-                const data = dataItem.dataContext;
-                const countryId = data.id;
+            worldSeries.mapPolygons.template.events.on("click", function(ev) {
+                var dataItem = ev.target.dataItem;
+                var data = dataItem.dataContext;
+                var countryId = data.id;
                 
                 // Check if we have cities for this country
                 if (cityDataByCountry[countryId]) {
-                    const zoomAnimation = worldSeries.zoomToDataItem(dataItem);
+                    var zoomAnimation = worldSeries.zoomToDataItem(dataItem);
 
                     Promise.all([
                         zoomAnimation.waitForStop(),
                         am5.net.load("https://cdn.amcharts.com/lib/5/geodata/json/" + data.map + ".json", mapChart)
-                    ]).then((results) => {
-                        const geodata = am5.JSONParser.parse(results[1].response);
+                    ]).then(function(results) {
+                        var geodata = am5.JSONParser.parse(results[1].response);
                         citySeries.setAll({
                             geoJSON: geodata,
                             fill: am5.color(0x666666)
@@ -1021,9 +1021,9 @@
             window.cityPointSeries.bullets.clear();
             
             window.cityPointSeries.bullets.push(function() {
-                const container = am5.Container.new(mapRoot, {});
+                var container = am5.Container.new(mapRoot, {});
                 
-                const circle = container.children.push(am5.Circle.new(mapRoot, {
+                var circle = container.children.push(am5.Circle.new(mapRoot, {
                     radius: 6,
                     fill: am5.color(0x667eea),
                     stroke: am5.color(0xffffff),
@@ -1033,7 +1033,7 @@
                 }));
 
                 circle.events.on("click", function(ev) {
-                    const cityId = ev.target.dataItem.dataContext.cityId;
+                    var cityId = ev.target.dataItem.dataContext.cityId;
                     openCityModal(cities[cityId]);
                 });
 
@@ -1047,9 +1047,9 @@
                 });
             });
 
-            const points = [];
-            for (let cityId in cities) {
-                const city = cities[cityId];
+            var points = [];
+            for (var cityId in cities) {
+                var city = cities[cityId];
                 if (city.country === countryId) {
                     points.push({
                         cityId: city.id,
@@ -1079,15 +1079,15 @@
             } else if (type === 'guest') {
                 createUser('Misafir Kullanıcı', 'guest@user.com', 5000, false);
             } else if (type === 'email') {
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
+                var email = document.getElementById('loginEmail').value;
+                var password = document.getElementById('loginPassword').value;
                 
                 if (!email || !password) {
                     alert('Lütfen tüm alanları doldurun');
                     return;
                 }
                 
-                const user = Object.values(users).find(u => u.email === email);
+                var user = Object.values(users).find(function(u) { return u.email === email; });
                 if (user) {
                     currentUser = user;
                     showMainApp();
@@ -1098,9 +1098,9 @@
         }
 
         function handleRegister() {
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
+            var name = document.getElementById('registerName').value;
+            var email = document.getElementById('registerEmail').value;
+            var password = document.getElementById('registerPassword').value;
             
             if (!name || !email || !password) {
                 alert('Lütfen tüm alanları doldurun');
@@ -1111,8 +1111,8 @@
         }
 
         function createUser(name, email, balance, isAdmin) {
-            const userId = 'user_' + Date.now();
-            const newUser = {
+            var userId = 'user_' + Date.now();
+            var newUser = {
                 id: userId,
                 name: name,
                 email: email,
@@ -1133,7 +1133,7 @@
             if (currentUser.isAdmin) {
                 document.getElementById('adminLink').style.display = 'block';
             }
-            setTimeout(() => initMap(), 100);
+            setTimeout(function() { initMap(); }, 100);
         }
 
         function handleLogout() {
@@ -1156,7 +1156,7 @@
             
             if (pageName === 'home') {
                 document.getElementById('homePage').classList.remove('hidden');
-                if (!mapRoot) setTimeout(() => initMap(), 100);
+                if (!mapRoot) setTimeout(function() { initMap(); }, 100);
             } else {
                 document.getElementById(pageName + 'Page').classList.remove('hidden');
             }
@@ -1167,17 +1167,13 @@
             if (pageName === 'admin') renderAdmin();
         }
 
-        function searchOnMap() {
-            // Implement search functionality
-        }
-
         function openCityModal(city) {
             selectedCity = city;
-            const modal = document.getElementById('cityModal');
+            var modal = document.getElementById('cityModal');
             document.getElementById('modalCityName').textContent = city.name;
             document.getElementById('modalCityCountry').textContent = '📍 ' + city.country;
             
-            const flagImg = document.getElementById('modalCityFlag');
+            var flagImg = document.getElementById('modalCityFlag');
             if (city.flag) {
                 flagImg.src = city.flag;
                 flagImg.style.display = 'block';
@@ -1185,51 +1181,23 @@
                 flagImg.style.display = 'none';
             }
             
-            const details = document.getElementById('modalCityDetails');
-            const changePercent = ((city.price - city.initialPrice) / city.initialPrice * 100).toFixed(2);
-            details.innerHTML = `
-                <div class="modal-detail">
-                    <label>Fiyat</label>
-                    <span style="color: #11998e; font-size: 22px;">${city.price.toFixed(2)} USDT</span>
-                </div>
-                ${city.owner ? `
-                    <div class="modal-detail">
-                        <label>Sahibi</label>
-                        <span style="color: #667eea;">${users[city.owner]?.name}</span>
-                    </div>
-                ` : ''}
-                <div class="modal-detail">
-                    <label>İlk Fiyat</label>
-                    <span>${city.initialPrice.toFixed(2)} USDT</span>
-                </div>
-                <div class="modal-detail">
-                    <label>Değişim</label>
-                    <span style="color: ${changePercent >= 0 ? '#11998e' : '#e74c3c'}">
-                        ${changePercent >= 0 ? '+' : ''}${changePercent}%
-                    </span>
-                </div>
-            `;
+            var details = document.getElementById('modalCityDetails');
+            var changePercent = ((city.price - city.initialPrice) / city.initialPrice * 100).toFixed(2);
+            details.innerHTML = '<div class="modal-detail"><label>Fiyat</label><span style="color: #11998e; font-size: 22px;">' + city.price.toFixed(2) + ' USDT</span></div>' +
+                (city.owner ? '<div class="modal-detail"><label>Sahibi</label><span style="color: #667eea;">' + (users[city.owner] ? users[city.owner].name : '') + '</span></div>' : '') +
+                '<div class="modal-detail"><label>İlk Fiyat</label><span>' + city.initialPrice.toFixed(2) + ' USDT</span></div>' +
+                '<div class="modal-detail"><label>Değişim</label><span style="color: ' + (changePercent >= 0 ? '#11998e' : '#e74c3c') + '">' +
+                (changePercent >= 0 ? '+' : '') + changePercent + '%</span></div>';
             
-            const actions = document.getElementById('modalCityActions');
-            if (city.owner === currentUser?.id) {
-                actions.innerHTML = `
-                    <div style="margin-top: 25px;">
-                        <input type="number" id="sellPrice" placeholder="Satış Fiyatı (USDT)" style="width: 100%; margin-bottom: 15px;">
-                        <button class="btn btn-primary" onclick="listCityForSale()">Borsaya Çıkar</button>
-                    </div>
-                `;
+            var actions = document.getElementById('modalCityActions');
+            if (city.owner === currentUser.id) {
+                actions.innerHTML = '<div style="margin-top: 25px;"><input type="number" id="sellPrice" placeholder="Satış Fiyatı (USDT)" style="width: 100%; margin-bottom: 15px;"><button class="btn btn-primary" onclick="listCityForSale()">Borsaya Çıkar</button></div>';
             } else if (city.owner) {
-                actions.innerHTML = `
-                    <div class="alert alert-warning" style="margin-top: 25px;">
-                        Bu şehir ${users[city.owner]?.name} kullanıcısına ait. Borsadan satın alabilirsiniz.
-                    </div>
-                `;
+                actions.innerHTML = '<div class="alert alert-warning" style="margin-top: 25px;">Bu şehir ' + (users[city.owner] ? users[city.owner].name : 'başka bir kullanıcıya') + ' ait. Borsadan satın alabilirsiniz.</div>';
             } else {
-                actions.innerHTML = `
-                    <button class="btn btn-primary" onclick="buyCity()" style="margin-top: 25px; font-size: 18px; padding: 18px;" ${currentUser.balance >= city.price ? '' : 'disabled'}>
-                        ${currentUser.balance >= city.price ? '💰 Satın Al - ' + city.price + ' USDT' : '❌ Yetersiz Bakiye'}
-                    </button>
-                `;
+                var disabled = currentUser.balance >= city.price ? '' : 'disabled';
+                var buttonText = currentUser.balance >= city.price ? '💰 Satın Al - ' + city.price + ' USDT' : '❌ Yetersiz Bakiye';
+                actions.innerHTML = '<button class="btn btn-primary" onclick="buyCity()" style="margin-top: 25px; font-size: 18px; padding: 18px;" ' + disabled + '>' + buttonText + '</button>';
             }
             
             modal.classList.remove('hidden');
@@ -1262,11 +1230,11 @@
             
             updateNavBalance();
             closeCityModal();
-            alert(`🎉 ${selectedCity.name} şehrini başarıyla satın aldınız!`);
+            alert('🎉 ' + selectedCity.name + ' şehrini başarıyla satın aldınız!');
         }
 
         function listCityForSale() {
-            const price = parseFloat(document.getElementById('sellPrice').value);
+            var price = parseFloat(document.getElementById('sellPrice').value);
             if (!price || price <= 0) {
                 alert('Lütfen geçerli bir fiyat girin');
                 return;
@@ -1285,58 +1253,39 @@
         }
 
         function renderMarket() {
-            const container = document.getElementById('marketOrders');
+            var container = document.getElementById('marketOrders');
             
             if (marketOrders.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 60px; margin-bottom: 20px;">📈</div>
-                        <p>Henüz satışta şehir bulunmuyor</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="empty-state"><div style="font-size: 60px; margin-bottom: 20px;">📈</div><p>Henüz satışta şehir bulunmuyor</p></div>';
                 return;
             }
             
             container.innerHTML = '';
-            marketOrders.forEach(order => {
-                const city = cities[order.cityId];
-                const seller = users[order.sellerId];
+            marketOrders.forEach(function(order) {
+                var city = cities[order.cityId];
+                var seller = users[order.sellerId];
                 
-                const item = document.createElement('div');
+                var item = document.createElement('div');
                 item.className = 'transaction-item';
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h3 style="font-size: 22px; margin-bottom: 8px;">${city.name}</h3>
-                            <p style="color: rgba(255,255,255,0.6);">Satıcı: ${seller?.name}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 28px; font-weight: 800; color: #11998e; margin-bottom: 15px;">
-                                ${order.price.toFixed(2)} USDT
-                            </div>
-                            ${order.sellerId !== currentUser?.id ? `
-                                <button class="btn btn-primary" onclick="buyFromMarket(${order.id})" ${currentUser.balance < order.price ? 'disabled' : ''}>
-                                    Satın Al
-                                </button>
-                            ` : '<span style="color: rgba(255,255,255,0.5);">Sizin ilanınız</span>'}
-                        </div>
-                    </div>
-                `;
+                var disabled = order.sellerId !== currentUser.id && currentUser.balance < order.price ? 'disabled' : '';
+                var button = order.sellerId !== currentUser.id ? '<button class="btn btn-primary" onclick="buyFromMarket(' + order.id + ')" ' + disabled + '>Satın Al</button>' : '<span style="color: rgba(255,255,255,0.5);">Sizin ilanınız</span>';
+                
+                item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><div><h3 style="font-size: 22px; margin-bottom: 8px;">' + city.name + '</h3><p style="color: rgba(255,255,255,0.6);">Satıcı: ' + (seller ? seller.name : '') + '</p></div><div style="text-align: right;"><div style="font-size: 28px; font-weight: 800; color: #11998e; margin-bottom: 15px;">' + order.price.toFixed(2) + ' USDT</div>' + button + '</div></div>';
                 container.appendChild(item);
             });
         }
 
         function buyFromMarket(orderId) {
-            const order = marketOrders.find(o => o.id === orderId);
+            var order = marketOrders.find(function(o) { return o.id === orderId; });
             if (!order || currentUser.balance < order.price) return;
             
-            const city = cities[order.cityId];
+            var city = cities[order.cityId];
             
             currentUser.balance -= order.price;
             users[currentUser.id].balance = currentUser.balance;
             users[order.sellerId].balance += order.price;
             
-            users[order.sellerId].cities = users[order.sellerId].cities.filter(c => c !== order.cityId);
+            users[order.sellerId].cities = users[order.sellerId].cities.filter(function(c) { return c !== order.cityId; });
             users[currentUser.id].cities.push(order.cityId);
             
             cities[order.cityId].owner = currentUser.id;
@@ -1352,15 +1301,15 @@
                 userId: currentUser.id
             });
             
-            marketOrders = marketOrders.filter(o => o.id !== orderId);
+            marketOrders = marketOrders.filter(function(o) { return o.id !== orderId; });
             
             updateNavBalance();
             renderMarket();
-            alert(`🎉 ${city.name} şehrini başarıyla satın aldınız!`);
+            alert('🎉 ' + city.name + ' şehrini başarıyla satın aldınız!');
         }
 
         function handleDeposit() {
-            const amount = parseFloat(document.getElementById('depositAmount').value);
+            var amount = parseFloat(document.getElementById('depositAmount').value);
             if (!amount || amount <= 0) {
                 alert('Lütfen geçerli bir miktar girin');
                 return;
@@ -1380,12 +1329,12 @@
             document.getElementById('depositAmount').value = '';
             updateNavBalance();
             renderWallet();
-            alert(`✅ ${amount} USDT başarıyla yatırıldı!`);
+            alert('✅ ' + amount + ' USDT başarıyla yatırıldı!');
         }
 
         function handleWithdraw() {
-            const amount = parseFloat(document.getElementById('withdrawAmount').value);
-            const wallet = document.getElementById('withdrawWallet').value;
+            var amount = parseFloat(document.getElementById('withdrawAmount').value);
+            var wallet = document.getElementById('withdrawWallet').value;
             
             if (!amount || amount <= 0 || !wallet) {
                 alert('Lütfen tüm alanları doldurun');
@@ -1414,45 +1363,30 @@
         }
 
         function renderWallet() {
-            const container = document.getElementById('transactionList');
-            const userTransactions = transactions.filter(t => t.userId === currentUser.id);
+            var container = document.getElementById('transactionList');
+            var userTransactions = transactions.filter(function(t) { return t.userId === currentUser.id; });
             
             if (userTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 60px; margin-bottom: 20px;">💳</div>
-                        <p>Henüz işlem geçmişiniz yok</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="empty-state"><div style="font-size: 60px; margin-bottom: 20px;">💳</div><p>Henüz işlem geçmişiniz yok</p></div>';
                 return;
             }
             
             container.innerHTML = '';
-            userTransactions.reverse().forEach(tx => {
-                const item = document.createElement('div');
+            userTransactions.reverse().forEach(function(tx) {
+                var item = document.createElement('div');
                 item.className = 'transaction-item';
                 
-                let typeText = tx.type === 'buy' ? '🛒 Satın Alma' : tx.type === 'deposit' ? '💰 Yatırma' : '💸 Çekim Talebi';
-                let amountColor = tx.type === 'deposit' ? '#11998e' : '#e74c3c';
+                var typeText = tx.type === 'buy' ? '🛒 Satın Alma' : tx.type === 'deposit' ? '💰 Yatırma' : '💸 Çekim Talebi';
+                var amountColor = tx.type === 'deposit' ? '#11998e' : '#e74c3c';
                 
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; margin-bottom: 5px;">${typeText}</div>
-                            ${tx.city ? `<div style="color: rgba(255,255,255,0.6); font-size: 14px;">${tx.city}</div>` : ''}
-                            ${tx.wallet ? `<div style="color: rgba(255,255,255,0.6); font-size: 14px;">Cüzdan: ${tx.wallet}</div>` : ''}
-                            <div style="color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 5px;">
-                                ${new Date(tx.date).toLocaleString('tr-TR')}
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 22px; font-weight: 800; color: ${amountColor};">
-                                ${tx.type === 'deposit' ? '+' : '-'}${tx.amount.toFixed(2)} USDT
-                            </div>
-                            ${tx.status ? `<div style="color: #ffc107; font-size: 12px; margin-top: 5px;">${tx.status}</div>` : ''}
-                        </div>
-                    </div>
-                `;
+                item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><div><div style="font-weight: 700; margin-bottom: 5px;">' + typeText + '</div>' +
+                    (tx.city ? '<div style="color: rgba(255,255,255,0.6); font-size: 14px;">' + tx.city + '</div>' : '') +
+                    (tx.wallet ? '<div style="color: rgba(255,255,255,0.6); font-size: 14px;">Cüzdan: ' + tx.wallet + '</div>' : '') +
+                    '<div style="color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 5px;">' + new Date(tx.date).toLocaleString('tr-TR') + '</div></div>' +
+                    '<div style="text-align: right;"><div style="font-size: 22px; font-weight: 800; color: ' + amountColor + ';">' +
+                    (tx.type === 'deposit' ? '+' : '-') + tx.amount.toFixed(2) + ' USDT</div>' +
+                    (tx.status ? '<div style="color: #ffc107; font-size: 12px; margin-top: 5px;">' + tx.status + '</div>' : '') +
+                    '</div></div>';
                 container.appendChild(item);
             });
         }
@@ -1462,13 +1396,13 @@
             document.getElementById('profileEmail').textContent = currentUser.email;
             document.getElementById('profileBalance').textContent = currentUser.balance.toFixed(2) + ' USDT';
             
-            const myCities = Object.values(cities).filter(c => c.owner === currentUser.id);
+            var myCities = Object.values(cities).filter(function(c) { return c.owner === currentUser.id; });
             document.getElementById('profileCityCount').textContent = myCities.length;
             
-            const totalValue = myCities.reduce((sum, city) => sum + city.price, 0);
+            var totalValue = myCities.reduce(function(sum, city) { return sum + city.price; }, 0);
             document.getElementById('profileTotalValue').textContent = totalValue.toFixed(2) + ' USDT';
             
-            const flagImg = document.getElementById('profileFlag');
+            var flagImg = document.getElementById('profileFlag');
             if (currentUser.flag) {
                 flagImg.src = currentUser.flag;
                 flagImg.style.display = 'block';
@@ -1476,33 +1410,21 @@
                 flagImg.style.display = 'none';
             }
             
-            const grid = document.getElementById('myCitiesGrid');
+            var grid = document.getElementById('myCitiesGrid');
             if (myCities.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 60px; margin-bottom: 20px;">🏙️</div>
-                        <p>Henüz şehriniz yok</p>
-                    </div>
-                `;
+                grid.innerHTML = '<div class="empty-state"><div style="font-size: 60px; margin-bottom: 20px;">🏙️</div><p>Henüz şehriniz yok</p></div>';
                 return;
             }
             
             grid.innerHTML = '';
-            myCities.forEach(city => {
-                const card = document.createElement('div');
+            myCities.forEach(function(city) {
+                var card = document.createElement('div');
                 card.className = 'city-card';
-                card.onclick = () => openCityModal(city);
+                card.onclick = function() { openCityModal(city); };
                 
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                        <div>
-                            <h3 style="font-size: 20px; margin-bottom: 5px;">${city.name}</h3>
-                            <p style="color: rgba(255,255,255,0.6);">📍 ${city.country}</p>
-                        </div>
-                        ${city.flag ? `<img src="${city.flag}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 8px;">` : ''}
-                    </div>
-                    <div style="color: #11998e; font-size: 24px; font-weight: 800;">${city.price.toFixed(2)} USDT</div>
-                `;
+                card.innerHTML = '<div style="display: flex; justify-content: space-between; margin-bottom: 15px;"><div><h3 style="font-size: 20px; margin-bottom: 5px;">' + city.name + '</h3><p style="color: rgba(255,255,255,0.6);">📍 ' + city.country + '</p></div>' +
+                    (city.flag ? '<img src="' + city.flag + '" style="width: 60px; height: 40px; object-fit: cover; border-radius: 8px;">' : '') +
+                    '</div><div style="color: #11998e; font-size: 24px; font-weight: 800;">' + city.price.toFixed(2) + ' USDT</div>';
                 grid.appendChild(card);
             });
         }
@@ -1511,7 +1433,7 @@
             document.getElementById('flagModal').classList.remove('hidden');
             initColorPalette();
             if (currentUser.flag) {
-                const img = new Image();
+                var img = new Image();
                 img.onload = function() {
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 };
@@ -1524,18 +1446,21 @@
         }
 
         function initColorPalette() {
-            const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#000000', '#FFA500', '#800080', '#FFC0CB', '#A52A2A', '#FFD700', '#00CED1'];
-            const palette = document.getElementById('colorPalette');
+            var colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#000000', '#FFA500', '#800080', '#FFC0CB', '#A52A2A', '#FFD700', '#00CED1'];
+            var palette = document.getElementById('colorPalette');
             palette.innerHTML = '';
             
-            colors.forEach(color => {
-                const btn = document.createElement('button');
+            colors.forEach(function(color) {
+                var btn = document.createElement('button');
                 btn.className = 'color-btn';
                 btn.style.backgroundColor = color;
                 if (color === currentColor) btn.classList.add('active');
-                btn.onclick = () => {
+                btn.onclick = function() {
                     currentColor = color;
-                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                    var allBtns = document.querySelectorAll('.color-btn');
+                    for (var i = 0; i < allBtns.length; i++) {
+                        allBtns[i].classList.remove('active');
+                    }
                     btn.classList.add('active');
                 };
                 palette.appendChild(btn);
@@ -1547,15 +1472,15 @@
         }
 
         function saveFlag() {
-            const flagData = canvas.toDataURL();
+            var flagData = canvas.toDataURL();
             currentUser.flag = flagData;
             users[currentUser.id].flag = flagData;
             
-            Object.values(cities).forEach(city => {
-                if (city.owner === currentUser.id) {
-                    city.flag = flagData;
+            for (var cityId in cities) {
+                if (cities[cityId].owner === currentUser.id) {
+                    cities[cityId].flag = flagData;
                 }
-            });
+            }
             
             closeFlagEditor();
             renderProfile();
@@ -1569,28 +1494,28 @@
             canvas.addEventListener('mouseup', stopDrawing);
             canvas.addEventListener('mouseout', stopDrawing);
             
-            canvas.addEventListener('touchstart', (e) => {
+            canvas.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const mouseEvent = new MouseEvent('mousedown', {
+                var touch = e.touches[0];
+                var rect = canvas.getBoundingClientRect();
+                var mouseEvent = new MouseEvent('mousedown', {
                     clientX: touch.clientX,
                     clientY: touch.clientY
                 });
                 canvas.dispatchEvent(mouseEvent);
             });
             
-            canvas.addEventListener('touchmove', (e) => {
+            canvas.addEventListener('touchmove', function(e) {
                 e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousemove', {
+                var touch = e.touches[0];
+                var mouseEvent = new MouseEvent('mousemove', {
                     clientX: touch.clientX,
                     clientY: touch.clientY
                 });
                 canvas.dispatchEvent(mouseEvent);
             });
             
-            canvas.addEventListener('touchend', (e) => {
+            canvas.addEventListener('touchend', function(e) {
                 e.preventDefault();
                 stopDrawing();
             });
@@ -1609,9 +1534,9 @@
         function draw(e) {
             if (!isDrawing) return;
             
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            var rect = canvas.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
             
             ctx.lineWidth = 5;
             ctx.lineCap = 'round';
@@ -1625,56 +1550,35 @@
         function renderAdmin() {
             if (!currentUser.isAdmin) return;
             
-            const usersContainer = document.getElementById('adminUsers');
+            var usersContainer = document.getElementById('adminUsers');
             usersContainer.innerHTML = '';
             
-            Object.values(users).forEach(user => {
-                const item = document.createElement('div');
+            for (var userId in users) {
+                var user = users[userId];
+                var item = document.createElement('div');
                 item.className = 'transaction-item';
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; margin-bottom: 5px;">${user.name}</div>
-                            <div style="color: rgba(255,255,255,0.6); font-size: 14px;">${user.email}</div>
-                            <div style="color: #11998e; margin-top: 5px;">Bakiye: ${user.balance.toFixed(2)} USDT</div>
-                        </div>
-                        <button class="btn btn-primary" onclick="adminAddBalance('${user.id}', 1000)" style="width: auto; padding: 10px 20px;">
-                            +1000 USDT
-                        </button>
-                    </div>
-                `;
+                item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center;"><div><div style="font-weight: 700; margin-bottom: 5px;">' + user.name + '</div><div style="color: rgba(255,255,255,0.6); font-size: 14px;">' + user.email + '</div><div style="color: #11998e; margin-top: 5px;">Bakiye: ' + user.balance.toFixed(2) + ' USDT</div></div><button class="btn btn-primary" onclick="adminAddBalance(\'' + user.id + '\', 1000)" style="width: auto; padding: 10px 20px;">+1000 USDT</button></div>';
                 usersContainer.appendChild(item);
-            });
+            }
             
-            const transContainer = document.getElementById('adminTransactions');
+            var transContainer = document.getElementById('adminTransactions');
             if (transactions.length === 0) {
-                transContainer.innerHTML = `<div class="empty-state"><p>Henüz işlem yok</p></div>`;
+                transContainer.innerHTML = '<div class="empty-state"><p>Henüz işlem yok</p></div>';
                 return;
             }
             
             transContainer.innerHTML = '';
-            transactions.slice().reverse().forEach(tx => {
-                const user = users[tx.userId];
-                const item = document.createElement('div');
+            var reversed = transactions.slice().reverse();
+            reversed.forEach(function(tx) {
+                var user = users[tx.userId];
+                var item = document.createElement('div');
                 item.className = 'transaction-item';
                 
-                let typeText = tx.type === 'buy' ? 'Satın Alma' : tx.type === 'deposit' ? 'Yatırma' : 'Çekim';
+                var typeText = tx.type === 'buy' ? 'Satın Alma' : tx.type === 'deposit' ? 'Yatırma' : 'Çekim';
                 
-                item.innerHTML = `
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>
-                            <div style="font-weight: 700; margin-bottom: 5px;">${typeText}</div>
-                            <div style="color: rgba(255,255,255,0.6); font-size: 14px;">Kullanıcı: ${user?.name}</div>
-                            ${tx.city ? `<div style="color: rgba(255,255,255,0.6); font-size: 14px;">${tx.city}</div>` : ''}
-                            <div style="color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 5px;">
-                                ${new Date(tx.date).toLocaleString('tr-TR')}
-                            </div>
-                        </div>
-                        <div style="font-size: 20px; font-weight: 800; color: ${tx.type === 'deposit' ? '#11998e' : '#e74c3c'};">
-                            ${tx.amount.toFixed(2)} USDT
-                        </div>
-                    </div>
-                `;
+                item.innerHTML = '<div style="display: flex; justify-content: space-between;"><div><div style="font-weight: 700; margin-bottom: 5px;">' + typeText + '</div><div style="color: rgba(255,255,255,0.6); font-size: 14px;">Kullanıcı: ' + (user ? user.name : '') + '</div>' +
+                    (tx.city ? '<div style="color: rgba(255,255,255,0.6); font-size: 14px;">' + tx.city + '</div>' : '') +
+                    '<div style="color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 5px;">' + new Date(tx.date).toLocaleString('tr-TR') + '</div></div><div style="font-size: 20px; font-weight: 800; color: ' + (tx.type === 'deposit' ? '#11998e' : '#e74c3c') + ';">' + tx.amount.toFixed(2) + ' USDT</div></div>';
                 transContainer.appendChild(item);
             });
         }
@@ -1686,7 +1590,7 @@
                 updateNavBalance();
             }
             renderAdmin();
-            alert(`✅ ${users[userId].name} kullanıcısına ${amount} USDT eklendi!`);
+            alert('✅ ' + users[userId].name + ' kullanıcısına ' + amount + ' USDT eklendi!');
         }
 
         function updateNavBalance() {
