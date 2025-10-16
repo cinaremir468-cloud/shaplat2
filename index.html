@@ -563,6 +563,33 @@
             color: var(--text);
         }
 
+        .btn-share {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-share::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-share:hover::before {
+            left: 100%;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -1399,10 +1426,13 @@
             selectedTags: [],
             sortBy: 'rating',
             currentContent: null,
+            contentHistory: [],
+            historyIndex: -1,
             contents: [],
             categories: [
                 'Web Siteleri',
                 'Video İçerikler',
+                'YouTube Kanalları',
                 'Müzik',
                 'Oyunlar',
                 'Teknoloji',
@@ -1410,11 +1440,13 @@
                 'Sanat & Tasarım',
                 'Sosyal Medya',
                 'Araçlar & Uygulamalar',
+                'App',
                 'Eğlence',
                 'Bilim & Doğa',
                 'Spor',
                 'Yemek & Tarif',
                 'Seyahat',
+                'Finans',
                 'Haberler & Medya',
                 'Diğer'
             ],
@@ -1457,12 +1489,10 @@
                         }
                         await renderApp();
                     } else {
-                        // Misafir olarak otomatik giriş
                         await handleAnonymousAuth();
                     }
                 });
             } else {
-                // Local mod - misafir olarak gir
                 const savedUser = sessionStorage.getItem('currentUser');
                 if (savedUser) {
                     window.shaplatState.currentUser = JSON.parse(savedUser);
@@ -1869,21 +1899,34 @@
                         <div class="info-container">
                             <h1 class="info-title">📖 Hakkımızda</h1>
                             <p class="info-text">
-                                <strong>Shaplat</strong>, internetin sınırsız dünyasında kaybolmuş hazineleri keşfetmeniz için tasarlanmış bir platformdur. 
-                                Her gün milyonlarca içerik üretilirken, gerçekten değerli ve ilginç olanları bulmak giderek zorlaşıyor.
+                                <strong style="color: var(--primary); font-size: 1.1rem;">Shaplat</strong>, internetin sınırsız dünyasında kaybolmuş hazineleri keşfetmeniz için tasarlanmış yenilikçi bir keşif platformudur. Her gün milyonlarca içerik üretilirken, gerçekten değerli ve ilginç olanları bulmak giderek zorlaşıyor. İşte tam bu noktada devreye Shaplat giriyor!
                             </p>
                             <p class="info-text">
-                                Biz bu sorunu çözmek için yola çıktık. Web siteleri, video içerikler, müzik, oyunlar ve daha fazlası arasından 
-                                özenle seçilmiş içerikleri sizlerle buluşturuyoruz. Her tıklamada yeni bir keşif, her keşifte yeni bir ilham!
+                                🎯 <strong>Misyonumuz:</strong> İnternetin gizli kalmış incilerini keşfetmenizi sağlamak, dijital dünyada sizi yeni deneyimlerle buluşturmak ve her tıklamada size ilham vermektir.
                             </p>
                             <p class="info-text">
-                                <strong>Nasıl Çalışır?</strong><br>
-                                SHAPLAT butonuna tıklayın ve algoritmanın sizin için seçtiği rastgele bir içeriği keşfedin. 
-                                Beğendiklerinizi favorilere ekleyin, değerlendirin ve keşfetmeye devam edin.
+                                ✨ <strong>Nasıl Çalışır?</strong><br>
+                                Kullanımı son derece basit! Ana sayfadaki büyük <strong>SHAPLAT</strong> butonuna tıklayın ve algoritmamızın özenle seçtiği rastgele bir içeriği keşfedin. Web siteleri, YouTube kanalları, müzik servisleri, oyunlar, finans araçları ve daha fazlası arasından binlerce içerik sizleri bekliyor. Beğendiklerinizi favorilere ekleyin, değerlendirin ve keşfetmeye devam edin!
                             </p>
                             <p class="info-text">
-                                <strong>Misyonumuz:</strong> İnternetin gizli kalmış incilerini gün yüzüne çıkarmak ve kullanıcılarımızın 
-                                dijital deneyimini zenginleştirmek.
+                                🌟 <strong>Neden Shaplat?</strong>
+                            </p>
+                            <p class="info-text" style="padding-left: 20px;">
+                                • <strong>Kişiselleştirilmiş Keşif:</strong> Kategori ve etiket filtreleriyle ilgi alanlarınıza özel içerikler bulun<br>
+                                • <strong>Trend Takibi:</strong> En popüler ve beğenilen içerikleri kolayca keşfedin<br>
+                                • <strong>Favori Sistemi:</strong> Beğendiğiniz içerikleri kaydedin ve istediğiniz zaman tekrar ziyaret edin<br>
+                                • <strong>Topluluk Değerlendirmeleri:</strong> Diğer kullanıcıların puanlamalarından faydalanın<br>
+                                • <strong>Sürekli Güncellenen İçerik:</strong> Her gün yeni keşiflerle karşılaşın
+                            </p>
+                            <p class="info-text">
+                                🚀 <strong>İçerik Kategorilerimiz:</strong> Web Siteleri, YouTube Kanalları, Müzik, Oyunlar, Teknoloji, Eğitim, Sanat & Tasarım, Finans Araçları, Mobil Uygulamalar ve daha fazlası!
+                            </p>
+                            <p class="info-text">
+                                💡 <strong>Vizyonumuz:</strong> Shaplat olarak, internetin sonsuz potansiyelini keşfetmenizi kolaylaştıran, eğlenceli ve kullanıcı dostu bir platform olmayı hedefliyoruz. Her bir tıklama, yeni bir dünyaya açılan kapı olsun istiyoruz.
+                            </p>
+                            <p class="info-text" style="margin-top: 30px; padding: 20px; background: var(--darker); border-radius: 10px; border-left: 4px solid var(--primary);">
+                                <strong>🎉 Shaplat'a katılın ve keşfetmeye başlayın!</strong><br>
+                                Favori içeriklerinizi kaydetmek, değerlendirme yapmak ve tüm özelliklere erişmek için ücretsiz hesap oluşturun.
                             </p>
                         </div>
                     </div>
@@ -1892,7 +1935,7 @@
                         <div class="info-container">
                             <h1 class="info-title">✉️ İletişim</h1>
                             <p class="info-text">
-                                Sorularınız, önerileriniz veya iş birliği teklifleri için bizimle iletişime geçebilirsiniz.
+                                Sorularınız, önerileriniz veya iş birliği teklifleri için bizimle iletişime geçebilirsiniz. Geri bildirimleriniz bizim için çok değerli!
                             </p>
                             <div class="form-group">
                                 <label class="form-label">İsim</label>
@@ -1910,8 +1953,9 @@
                                 📤 Gönder
                             </button>
                             <div style="margin-top: 40px; padding-top: 25px; border-top: 1px solid var(--border);">
-                                <p class="info-text"><strong>E-posta:</strong> info@shaplat.com</p>
-                                <p class="info-text"><strong>Sosyal:</strong> @shaplat</p>
+                                <p class="info-text"><strong>📧 E-posta:</strong> info@shaplat.com</p>
+                                <p class="info-text"><strong>📱 Sosyal Medya:</strong> @shaplat</p>
+                                <p class="info-text"><strong>🌐 Web:</strong> www.shaplat.com</p>
                             </div>
                         </div>
                     </div>
@@ -1941,7 +1985,6 @@
                 </div>
             `;
 
-            // Mobile swipe desteği ekle
             const sidebar = document.getElementById('sidebar');
             sidebar.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -1952,7 +1995,6 @@
                 handleSwipe();
             }, {passive: true});
 
-            // İlk içeriği yükle
             await shaplatRandom();
             
             renderTrends();
@@ -1967,7 +2009,6 @@
 
         function handleSwipe() {
             if (touchEndX < touchStartX - 50) {
-                // Sola kaydırma - menüyü kapat
                 const sidebar = document.getElementById('sidebar');
                 if (sidebar.classList.contains('mobile-active')) {
                     sidebar.classList.remove('mobile-active');
@@ -2090,7 +2131,6 @@
                     JSON.stringify(window.shaplatState.notifications));
                 renderNotifications();
                 
-                // Badge'i güncelle
                 const badge = document.querySelector('.notification-badge');
                 const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
                 if (badge) {
@@ -2110,7 +2150,6 @@
             document.getElementById(section).classList.add('active');
             event.target.classList.add('active');
 
-            // Mobilde menüyü kapat
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 sidebar.classList.remove('mobile-active');
@@ -2124,7 +2163,6 @@
         window.selectCategory = function(category) {
             window.shaplatState.selectedCategory = category;
             
-            // Kategorileri güncelle
             document.querySelectorAll('.category-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -2139,17 +2177,14 @@
                 window.shaplatState.selectedTags.push(tag);
             }
             
-            // Tag'ları görsel olarak güncelle
             event.target.classList.toggle('selected');
             
-            // Filtreleri güncelle
             updateActiveFilters();
         };
 
         window.removeTagFilter = function(tag) {
             window.shaplatState.selectedTags = window.shaplatState.selectedTags.filter(t => t !== tag);
             
-            // Tag'ları görsel olarak güncelle
             const tags = document.querySelectorAll('.tag');
             tags.forEach(t => {
                 if (t.textContent.includes(tag)) {
@@ -2197,7 +2232,6 @@
         window.shaplatRandom = async function() {
             const contentCard = document.querySelector('.content-card');
             
-            // Fade out animasyonu
             if (contentCard) {
                 contentCard.classList.add('fade-out');
                 await new Promise(resolve => setTimeout(resolve, 300));
@@ -2239,11 +2273,35 @@
                 localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
             }
             
-            // Yeni içeriği göster
+            // History'ye ekle
+            if (window.shaplatState.historyIndex < window.shaplatState.contentHistory.length - 1) {
+                window.shaplatState.contentHistory = window.shaplatState.contentHistory.slice(0, window.shaplatState.historyIndex + 1);
+            }
+            window.shaplatState.contentHistory.push(randomContent.id);
+            window.shaplatState.historyIndex = window.shaplatState.contentHistory.length - 1;
+            
             displayContent(randomContent);
             
-            // Stats'ı güncelle
             updateProfileStats();
+        };
+
+        window.goToPreviousContent = async function() {
+            if (window.shaplatState.historyIndex > 0) {
+                window.shaplatState.historyIndex--;
+                const contentId = window.shaplatState.contentHistory[window.shaplatState.historyIndex];
+                const content = window.shaplatState.contents.find(c => c.id === contentId);
+                
+                if (content) {
+                    const contentCard = document.querySelector('.content-card');
+                    if (contentCard) {
+                        contentCard.classList.add('fade-out');
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+                    displayContent(content);
+                }
+            } else {
+                showNotification('⚠️ Önceki içerik yok!');
+            }
         };
 
         function updateProfileStats() {
@@ -2259,6 +2317,8 @@
             const userRating = userRatings[`${window.shaplatState.currentUser.id}_${content.id}`] || 0;
             const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
             const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === content.id);
+
+            const canGoBack = window.shaplatState.historyIndex > 0;
 
             const contentHTML = `
                 <div class="content-card fade-in">
@@ -2320,9 +2380,14 @@
                                     onclick="toggleFavorite('${content.id}')">
                                 ${isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle'}
                             </button>
-                            <button class="btn btn-outline" onclick="shareContent('${content.id}')">
-                                📤 Paylaş
+                            <button class="btn btn-share" onclick="shareContent('${content.id}')">
+                                <span style="position: relative; z-index: 1;">📤 Paylaş</span>
                             </button>
+                            ${canGoBack ? `
+                            <button class="btn btn-back" onclick="goToPreviousContent()">
+                                ⬅️ Önceki
+                            </button>
+                            ` : ''}
                         </div>
 
                         <div class="shaplat-button-container">
@@ -2367,7 +2432,6 @@
 
             showNotification(`✅ ${rating} yıldız verdiniz!`);
             
-            // Sadece yıldızları güncelle
             const stars = document.querySelectorAll('.star');
             stars.forEach((star, index) => {
                 if (index < rating) {
@@ -2377,13 +2441,11 @@
                 }
             });
 
-            // Rating sayılarını güncelle
             document.querySelector('.rating-number').textContent = content.rating.toFixed(1);
             document.querySelector('.rating-count').textContent = `${content.ratingCount} değerlendirme`;
         };
 
         window.toggleFavorite = async function(contentId) {
-            // Misafir kontrolü
             if (window.shaplatState.currentUser.anonymous) {
                 showNotification('⚠️ Favorilere eklemek için giriş yapın!');
                 showAuthModal('login');
@@ -2425,13 +2487,11 @@
                 localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
             }
 
-            // Butonu güncelle
             const favoriteBtn = event.target;
             const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
             favoriteBtn.className = isFavorite ? 'btn btn-outline' : 'btn btn-success';
             favoriteBtn.innerHTML = isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle';
 
-            // Stats'ı güncelle
             const stats = document.querySelectorAll('.stat');
             stats.forEach(stat => {
                 if (stat.textContent.includes('❤️')) {
@@ -2449,6 +2509,9 @@
                     title: content.title,
                     text: content.description,
                     url: content.url
+                }).catch(() => {
+                    navigator.clipboard.writeText(content.url);
+                    showNotification('📋 Link kopyalandı!');
                 });
             } else {
                 navigator.clipboard.writeText(content.url);
@@ -2482,7 +2545,6 @@
         }
 
         window.renderFavorites = function() {
-            // Misafir kontrolü
             if (window.shaplatState.currentUser.anonymous) {
                 document.getElementById('favorites-list').innerHTML = `
                     <div class="empty-state">
@@ -2530,6 +2592,8 @@
 
         window.viewContent = async function(contentId) {
             const content = window.shaplatState.contents.find(c => c.id === contentId);
+            if (!content) return;
+            
             content.viewCount = (content.viewCount || 0) + 1;
             
             if (isFirebaseConfigured) {
@@ -2546,12 +2610,18 @@
             
             showSection('random');
             
-            // Fade animasyonu
             const contentCard = document.querySelector('.content-card');
             if (contentCard) {
                 contentCard.classList.add('fade-out');
                 await new Promise(resolve => setTimeout(resolve, 300));
             }
+            
+            // History'ye ekle
+            if (window.shaplatState.historyIndex < window.shaplatState.contentHistory.length - 1) {
+                window.shaplatState.contentHistory = window.shaplatState.contentHistory.slice(0, window.shaplatState.historyIndex + 1);
+            }
+            window.shaplatState.contentHistory.push(content.id);
+            window.shaplatState.historyIndex = window.shaplatState.contentHistory.length - 1;
             
             displayContent(content);
         };
@@ -2580,7 +2650,6 @@
 
             showNotification('✅ Profil güncellendi!');
             
-            // İsmi güncelle
             document.querySelector('.profile-name').textContent = name;
             document.querySelector('.user-card div div:first-child').textContent = name;
             document.querySelector('.user-avatar').textContent = name[0].toUpperCase();
@@ -2607,7 +2676,6 @@
             document.getElementById('sidebar').classList.toggle('mobile-active');
         };
 
-        // Admin Functions
         function updateAdminStats() {
             if (window.shaplatState.currentUser.role !== 'admin') return;
             
@@ -2709,7 +2777,7 @@
                         Her satıra bir içerik yazın. Alanları | (pipe) işareti ile ayırın:
                         <div class="format-example">Başlık|Açıklama|https://url.com|https://image-url.com|Kategori|etiket1,etiket2,etiket3</div>
                         <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.8rem;">
-                            💡 <strong>Önemli:</strong> Etiketleri virgül ile ayırın. Kategori var olan kategorilerden biri olmalı. Aynı URL'den sadece bir içerik eklenebilir.
+                            💡 <strong>Önemli:</strong> Etiketleri virgül ile ayırın. Kategori var olan kategorilerden biri olmalı. <strong>Aynı URL'den sadece bir içerik eklenebilir.</strong>
                         </div>
                     </div>
 
@@ -2746,7 +2814,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             let errorCount = 0;
             const errors = [];
 
-            // Mevcut URL'leri kontrol et
             const existingUrls = window.shaplatState.contents.map(c => c.url.toLowerCase());
 
             for (let i = 0; i < lines.length; i++) {
@@ -2767,7 +2834,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                     continue;
                 }
 
-                // URL kontrolü
                 if (existingUrls.includes(url.toLowerCase())) {
                     errorCount++;
                     errors.push(`Satır ${i + 1}: Bu URL zaten kayıtlı: ${url}`);
@@ -3023,14 +3089,13 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
                 return;
             }
 
-            // URL kontrolü (düzenlemede mevcut içeriğin URL'si hariç)
             const existingContent = window.shaplatState.contents.find(c => 
                 c.url.toLowerCase() === url.toLowerCase() && 
                 c.id !== window.shaplatState.editingContentId
             );
 
             if (existingContent) {
-                showNotification('⚠️ Bu URL zaten kayıtlı!');
+                showNotification('⚠️ Bu URLzaten kayıtlı!');
                 return;
             }
 
@@ -3050,7 +3115,6 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             if (window.shaplatState.editingContentId) {
                 const content = window.shaplatState.contents.find(c => c.id === window.shaplatState.editingContentId);
                 
-                // Rating ve diğer istatistikleri koru
                 contentData.rating = content.rating;
                 contentData.ratingCount = content.ratingCount;
                 contentData.viewCount = content.viewCount;
