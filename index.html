@@ -3136,4 +3136,37 @@ Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://e
             }
             if (window.shaplatState.categories.includes(name)) {
                 showNotification('⚠️ Bu kategori zaten var!');
-                return
+                return;
+            }
+            window.shaplatState.categories.push(name);
+            renderAdminCategories();
+            showNotification('✅ Kategori eklendi!');
+        };
+
+        window.deleteCategory = function(name) {
+            if (window.shaplatState.contents.some(c => c.category === name)) {
+                showNotification('⚠️ Bu kategoride içerikler var!');
+                return;
+            }
+            if (confirm(`"${name}" kategorisini silmek istediğinize emin misiniz?`)) {
+                window.shaplatState.categories = window.shaplatState.categories.filter(c => c !== name);
+                renderAdminCategories();
+                showNotification('🗑️ Kategori silindi');
+            }
+        };
+
+        window.showAuthModal = showAuthModal;
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
