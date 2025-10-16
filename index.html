@@ -1,0 +1,3195 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaplat - Keşif Platformu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="dark"] {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0a0a0f;
+            --darker: #050508;
+            --card: #15151e;
+            --border: #2a2a3e;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        :root[data-theme="light"] {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #ffffff;
+            --darker: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        :root[data-theme="cyberpunk"] {
+            --primary: #00ffff;
+            --secondary: #ff00ff;
+            --success: #00ff41;
+            --danger: #ff0080;
+            --warning: #ffff00;
+            --dark: #0a0014;
+            --darker: #050008;
+            --card: #1a0033;
+            --border: #ff00ff;
+            --text: #00ffff;
+            --text-muted: #9d4edd;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        [data-theme="cyberpunk"] {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        [data-theme="cyberpunk"] body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(0deg, rgba(255, 0, 255, 0.03) 0px, transparent 2px),
+                repeating-linear-gradient(90deg, rgba(0, 255, 255, 0.03) 0px, transparent 2px);
+            background-size: 4px 4px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .bg-gradient {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        [data-theme="cyberpunk"] .gradient-orb {
+            filter: blur(100px);
+            box-shadow: 0 0 100px currentColor;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -300px;
+            left: -200px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--secondary);
+            bottom: -200px;
+            right: -150px;
+            animation-delay: 7s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(100px, -100px) rotate(120deg); }
+            66% { transform: translate(-80px, 80px) rotate(240deg); }
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--darker);
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="cyberpunk"] .sidebar {
+            border-right: 2px solid var(--border);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        .logo-container {
+            padding: 0 20px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        [data-theme="cyberpunk"] .logo {
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--secondary);
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 15px 20px;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 70px;
+        }
+
+        .theme-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        [data-theme="cyberpunk"] .theme-btn {
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .sidebar-section {
+            margin-bottom: 18px;
+            padding: 0 15px;
+        }
+
+        .section-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            padding: 0 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 3px;
+            height: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: height 0.3s;
+        }
+
+        .nav-item:hover {
+            background: var(--card);
+            transform: translateX(3px);
+        }
+
+        .nav-item:hover::before {
+            height: 100%;
+        }
+
+        .nav-item.active {
+            background: var(--card);
+            color: var(--primary);
+        }
+
+        .nav-item.active::before {
+            height: 100%;
+        }
+
+        [data-theme="cyberpunk"] .nav-item.active {
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .notification-badge {
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-left: auto;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+        }
+
+        .category-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(3px);
+        }
+
+        .category-item.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 700;
+        }
+
+        .category-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .user-section {
+            margin-top: auto;
+            padding: 15px;
+        }
+
+        .user-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+        }
+
+        .search-container {
+            max-width: 650px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        [data-theme="cyberpunk"] .search-input {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        [data-theme="cyberpunk"] .search-input:focus {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 8px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        [data-theme="cyberpunk"] .search-results {
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+
+        .search-result-item {
+            padding: 14px 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--darker);
+            transform: translateX(5px);
+        }
+
+        .search-result-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .search-result-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .content-display {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .content-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="cyberpunk"] .content-card {
+            border: 2px solid var(--border);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
+        }
+
+        .content-card.fade-out {
+            opacity: 0;
+            transform: scale(0.95) rotateX(5deg);
+        }
+
+        .content-card.fade-in {
+            animation: fadeInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px) rotateX(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0) rotateX(0);
+            }
+        }
+
+        .content-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .content-card:hover .content-image {
+            transform: scale(1.05);
+        }
+
+        .content-body {
+            padding: 20px;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .content-category {
+            display: inline-block;
+            padding: 5px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        [data-theme="cyberpunk"] .content-category {
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .content-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .content-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .content-url {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+        }
+
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            padding: 5px 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--primary);
+            border-radius: 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        [data-theme="cyberpunk"] .tag {
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .rating-box {
+            background: var(--darker);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+        }
+
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .rating-score {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .rating-number {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--warning);
+        }
+
+        .rating-max {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .rating-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .star {
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--border);
+            transition: all 0.2s;
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--warning);
+            transform: scale(1.15);
+        }
+
+        [data-theme="cyberpunk"] .star.active {
+            text-shadow: 0 0 10px var(--warning);
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .btn-primary {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .shaplat-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-undo {
+            background: var(--darker);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 14px 25px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-undo:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .btn-undo:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-shaplat {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-shaplat:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
+        }
+
+        [data-theme="cyberpunk"] .btn-shaplat {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(255, 0, 255, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .btn-shaplat:hover {
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8), 0 0 80px rgba(255, 0, 255, 0.5);
+        }
+
+        .heart-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: heartBurst 1s ease-out forwards;
+        }
+
+        @keyframes heartBurst {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0);
+            }
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            z-index: 1000;
+            display: none;
+        }
+
+        .keyboard-hint.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .trends-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .trend-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+        }
+
+        .trend-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        [data-theme="cyberpunk"] .trend-card:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+
+        .trend-rank {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+            z-index: 10;
+            color: white;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .trend-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .trend-body {
+            padding: 14px;
+        }
+
+        .trend-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .trend-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .profile-avatar-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 900;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 25px;
+            margin-top: 18px;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .profile-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-settings {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .notifications-panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 25px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .notification-item {
+            display: flex;
+            gap: 12px;
+            padding: 14px;
+            background: var(--darker);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: var(--card);
+            transform: translateX(4px);
+        }
+
+        .notification-item.unread {
+            border-left: 3px solid var(--primary);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-text {
+            font-weight: 600;
+            margin-bottom: 3px;
+            font-size: 0.9rem;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .info-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 40px;
+        }
+
+        .info-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 25px;
+        }
+
+        .info-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 35px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-muted);
+            position: relative;
+            font-weight: 600;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .auth-divider::before { left: 0; }
+        .auth-divider::after { right: 0; }
+
+        .social-auth {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-google {
+            background: white;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 18px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .auth-link {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .admin-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 25px;
+        }
+
+        .admin-search {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 11px 14px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .stat-card {
+            background: var(--darker);
+            border: 1px solid var(--border);
+            padding: 22px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .admin-tab {
+            padding: 11px 22px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+            color: white;
+        }
+
+        .admin-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .data-table th {
+            background: var(--darker);
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table tr:hover {
+            background: var(--darker);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: var(--primary);
+            color: white;
+            margin-right: 5px;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .tags-input-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 10px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            min-height: 45px;
+        }
+
+        .tag-input-item {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 4px 10px;
+            border-radius: 7px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        .tags-input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            min-width: 100px;
+            font-family: inherit;
+        }
+
+        .bulk-import-area {
+            margin-top: 20px;
+        }
+
+        .bulk-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            background: var(--darker);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .bulk-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .format-info {
+            background: var(--darker);
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+
+        .format-info strong {
+            color: var(--primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .format-example {
+            background: var(--card);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            color: var(--text-muted);
+        }
+
+        .notification {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            background: var(--card);
+            border: 2px solid var(--success);
+            padding: 14px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(500px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 70px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .trends-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+
+            .sidebar.mobile-active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+
+            .trends-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-image {
+                height: 180px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .section-header {
+                font-size: 1.6rem;
+            }
+
+            .shaplat-controls {
+                flex-direction: column;
+            }
+
+            .btn-shaplat,
+            .btn-undo {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            bottom: 18px;
+            right: 18px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+            z-index: 99;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        .firebase-warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    <div class="keyboard-hint" id="keyboard-hint"></div>
+
+    <div id="app"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, increment, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
+            authDomain: "shaplat-af37d.firebaseapp.com",
+            projectId: "shaplat-af37d",
+            storageBucket: "shaplat-af37d.firebasestorage.app",
+            messagingSenderId: "1032036004493",
+            appId: "1:1032036004493:web:1460aaed627384e88d28c4",
+            measurementId: "G-P3WYFFTGK4"
+        };
+
+        let app, auth, db;
+        let isFirebaseConfigured = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            isFirebaseConfigured = true;
+        } catch (error) {
+            console.log('Firebase yapılandırılmamış. Local mod aktif.');
+        }
+
+        window.shaplatState = {
+            currentUser: null,
+            selectedCategory: 'all',
+            selectedTags: [],
+            sortBy: 'rating',
+            currentContent: null,
+            contents: [],
+            contentHistory: [],
+            categories: [
+                'Web Siteleri',
+                'Video İçerikler',
+                'Müzik',
+                'Oyunlar',
+                'Teknoloji',
+                'Eğitim',
+                'Sanat & Tasarım',
+                'Sosyal Medya',
+                'Araçlar & Uygulamalar',
+                'Eğlence',
+                'Bilim & Doğa',
+                'Spor',
+                'Yemek & Tarif',
+                'Seyahat',
+                'Haberler & Medya',
+                'Diğer'
+            ],
+            currentTags: [],
+            editingContentId: null,
+            notifications: [],
+            searchQuery: '',
+            searchResults: [],
+            auth,
+            db,
+            isFirebaseConfigured
+        };
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        init();
+
+        async function init() {
+            const theme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            
+            if (isFirebaseConfigured) {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const userDoc = await getDoc(doc(db, 'users', user.uid));
+                        if (userDoc.exists()) {
+                            window.shaplatState.currentUser = { id: user.uid, ...userDoc.data() };
+                        } else {
+                            window.shaplatState.currentUser = {
+                                id: user.uid,
+                                email: user.email,
+                                name: user.displayName || user.email?.split('@')[0] || 'Kullanıcı',
+                                role: user.email === 'admin@shaplat.com' ? 'admin' : 'user',
+                                anonymous: user.isAnonymous,
+                                shaplatCount: 0,
+                                favoriteCount: 0
+                            };
+                            await setDoc(doc(db, 'users', user.uid), window.shaplatState.currentUser);
+                        }
+                        await renderApp();
+                    } else {
+                        await handleAnonymousAuth();
+                    }
+                });
+            } else {
+                const savedUser = sessionStorage.getItem('currentUser');
+                if (savedUser) {
+                    window.shaplatState.currentUser = JSON.parse(savedUser);
+                } else {
+                    window.shaplatState.currentUser = {
+                        id: 'guest_' + Date.now(),
+                        email: null,
+                        name: 'Misafir',
+                        role: 'user',
+                        anonymous: true,
+                        shaplatCount: 0,
+                        favoriteCount: 0
+                    };
+                    sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
+                }
+                renderApp();
+            }
+
+            setupKeyboardShortcuts();
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                const key = e.key.toLowerCase();
+                
+                if (key === ' ' || key === 'spacebar') {
+                    e.preventDefault();
+                    shaplatRandom();
+                    showKeyboardHint('Space: SHAPLAT');
+                } else if (key === 'arrowleft') {
+                    e.preventDefault();
+                    undoShaplat();
+                    showKeyboardHint('← Geri Al');
+                } else if (key === 'arrowright') {
+                    e.preventDefault();
+                    shaplatRandom();
+                    showKeyboardHint('→ İleri');
+                } else if (key === 'f') {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        toggleFavorite(window.shaplatState.currentContent.id);
+                        showKeyboardHint('F: Favori');
+                    }
+                } else if (key === 's') {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        shareContent(window.shaplatState.currentContent.id);
+                        showKeyboardHint('S: Paylaş');
+                    }
+                } else if (['1', '2', '3', '4', '5'].includes(key)) {
+                    e.preventDefault();
+                    if (window.shaplatState.currentContent) {
+                        rateContent(window.shaplatState.currentContent.id, parseInt(key));
+                        showKeyboardHint(`${key} ⭐ Rating`);
+                    }
+                } else if (key === 'escape') {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar && sidebar.classList.contains('mobile-active')) {
+                        sidebar.classList.remove('mobile-active');
+                        showKeyboardHint('Esc: Menü Kapalı');
+                    }
+                }
+            });
+        }
+
+        function showKeyboardHint(text) {
+            const hint = document.getElementById('keyboard-hint');
+            hint.textContent = text;
+            hint.classList.add('show');
+            setTimeout(() => {
+                hint.classList.remove('show');
+            }, 1500);
+        }
+
+        window.toggleTheme = function(theme) {
+            if (!theme) {
+                const themes = ['dark', 'light', 'cyberpunk'];
+                const current = document.documentElement.getAttribute('data-theme');
+                const currentIndex = themes.indexOf(current);
+                theme = themes[(currentIndex + 1) % themes.length];
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.style.opacity = btn.dataset.theme === theme ? '1' : '0.6';
+            });
+        };
+
+        function showAuthModal(mode) {
+            const modalHTML = `
+                <div class="modal active" id="auth-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">${mode === 'login' ? '🔐 Giriş Yap' : '📝 Kayıt Ol'}</h2>
+                            <p style="color: var(--text-muted); font-weight: 600;">Shaplat'a hoş geldiniz!</p>
+                        </div>
+
+                        ${isFirebaseConfigured ? '' : '<div class="firebase-warning">⚠️ Firebase yapılandırılmamış. Google girişi çalışmayabilir.</div>'}
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">E-posta</label>
+                                <input type="email" id="auth-email" class="form-input" placeholder="ornek@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Şifre</label>
+                                <input type="password" id="auth-password" class="form-input" placeholder="••••••••">
+                            </div>
+                            ${mode === 'register' ? `
+                            <div class="form-group">
+                                <label class="form-label">İsim</label>
+                                <input type="text" id="auth-name" class="form-input" placeholder="Adınız Soyadınız">
+                            </div>
+                            ` : ''}
+                            <button class="btn btn-primary" style="width: 100%;" onclick="handleEmailAuth('${mode}')">
+                                ${mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol'}
+                            </button>
+                        </div>
+
+                        <div class="auth-divider">veya</div>
+
+                        <div class="social-auth">
+                            <button class="btn btn-google" onclick="handleGoogleAuth()">
+                                🔵 Google ile Devam Et
+                            </button>
+                        </div>
+
+                        <div class="auth-switch">
+                            ${mode === 'login' ? 
+                                'Hesabınız yok mu? <button class="auth-link" onclick="showAuthModal(\'register\')">Kayıt Ol</button>' :
+                                'Zaten hesabınız var mı? <button class="auth-link" onclick="showAuthModal(\'login\')">Giriş Yap</button>'
+                            }
+                        </div>
+
+                        <div class="auth-switch" style="margin-top: 10px;">
+                            <button class="auth-link" onclick="closeAuthModal()">❌ Kapat</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const existingModal = document.getElementById('auth-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        window.closeAuthModal = function() {
+            const modal = document.getElementById('auth-modal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        window.handleEmailAuth = async function(mode) {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const name = mode === 'register' ? document.getElementById('auth-name').value : '';
+
+            if (!email || !password || (mode === 'register' && !name)) {
+                showNotification('⚠️ Tüm alanları doldurun!');
+                return;
+            }
+
+            if (isFirebaseConfigured) {
+                try {
+                    let userCredential;
+                    if (mode === 'login') {
+                        userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    } else {
+                        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const userData = {
+                            email,
+                            name,
+                            role: email === 'admin@shaplat.com' ? 'admin' : 'user',
+                            anonymous: false,
+                            shaplatCount: 0,
+                            favoriteCount: 0
+                        };
+                        await setDoc(doc(db, 'users', userCredential.user.uid), userData);
+                    }
+                    closeAuthModal();
+                    showNotification('✅ Başarıyla giriş yapıldı!');
+                } catch (error) {
+                    showNotification('❌ Hata: ' + error.message);
+                }
+            } else {
+                const user = {
+                    id: 'user_' + Date.now(),
+                    email,
+                    name: name || email.split('@')[0],
+                    role: email === 'admin@shaplat.com' ? 'admin' : 'user',
+                    anonymous: false,
+                    shaplatCount: 0,
+                    favoriteCount: 0
+                };
+                login(user);
+                closeAuthModal();
+            }
+        };
+
+        window.handleGoogleAuth = async function() {
+            if (isFirebaseConfigured) {
+                try {
+                    const provider = new GoogleAuthProvider();
+                    await signInWithPopup(auth, provider);
+                    closeAuthModal();
+                    showNotification('✅ Google ile giriş yapıldı!');
+                } catch (error) {
+                    if (error.code === 'auth/unauthorized-domain') {
+                        showNotification('❌ Firebase Console\'da bu domain\'i eklemeniz gerekiyor: ' + window.location.hostname);
+                    } else {
+                        showNotification('❌ Hata: ' + error.message);
+                    }
+                }
+            } else {
+                const user = {
+                    id: 'google_' + Date.now(),
+                    email: 'user@gmail.com',
+                    name: 'Google Kullanıcı',
+                    role: 'user',
+                    anonymous: false,
+                    shaplatCount: 0,
+                    favoriteCount: 0
+                };
+                login(user);
+                closeAuthModal();
+            }
+        };
+
+        window.handleAnonymousAuth = async function() {
+            if (isFirebaseConfigured) {
+                try {
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.error('Anonim giriş hatası:', error);
+                }
+            } else {
+                const user = {
+                    id: 'anon_' + Date.now(),
+                    email: null,
+                    name: 'Misafir',
+                    role: 'user',
+                    anonymous: true,
+                    shaplatCount: 0,
+                    favoriteCount: 0
+                };
+                login(user);
+            }
+        };
+
+        function login(user) {
+            window.shaplatState.currentUser = user;
+            sessionStorage.setItem('currentUser', JSON.stringify(user));
+            renderApp();
+        }
+
+        window.logout = async function() {
+            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                if (isFirebaseConfigured) {
+                    await auth.signOut();
+                    await handleAnonymousAuth();
+                } else {
+                    window.shaplatState.currentUser = {
+                        id: 'guest_' + Date.now(),
+                        email: null,
+                        name: 'Misafir',
+                        role: 'user',
+                        anonymous: true,
+                        shaplatCount: 0,
+                        favoriteCount: 0
+                    };
+                    sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
+                    renderApp();
+                }
+            }
+        };
+
+        async function renderApp() {
+            await loadContents();
+            loadNotifications();
+            
+            const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
+            
+            document.getElementById('app').innerHTML = `
+                <div class="sidebar" id="sidebar">
+                    <div class="logo-container">
+                        <div class="logo">SHAPLAT</div>
+                    </div>
+
+                    <div class="theme-toggle">
+                        <button class="theme-btn" data-theme="dark" onclick="toggleTheme('dark')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'dark' ? '1' : '0.6'}">
+                            🌙 Dark
+                        </button>
+                        <button class="theme-btn" data-theme="light" onclick="toggleTheme('light')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'light' ? '1' : '0.6'}">
+                            ☀️ Light
+                        </button>
+                        <button class="theme-btn" data-theme="cyberpunk" onclick="toggleTheme('cyberpunk')" style="opacity: ${document.documentElement.getAttribute('data-theme') === 'cyberpunk' ? '1' : '0.6'}">
+                            🔮 Cyber
+                        </button>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Menü</div>
+                        <div class="nav-item active" onclick="showSection('random')">
+                            🎲 Rastgele Keşfet
+                        </div>
+                        <div class="nav-item" onclick="showSection('trends')">
+                            🔥 Trendler
+                        </div>
+                        <div class="nav-item" onclick="showSection('favorites')">
+                            ❤️ Favoriler
+                        </div>
+                        <div class="nav-item" onclick="showSection('profile')">
+                            👤 Profil
+                        </div>
+                        <div class="nav-item" onclick="showSection('notifications')">
+                            🔔 Bildirimler
+                            ${unreadCount > 0 ? `<span class="notification-badge">${unreadCount}</span>` : ''}
+                        </div>
+                        <div class="nav-item" onclick="showSection('about')">
+                            ℹ️ Hakkımızda
+                        </div>
+                        <div class="nav-item" onclick="showSection('contact')">
+                            ✉️ İletişim
+                        </div>
+                        ${window.shaplatState.currentUser.role === 'admin' ? `
+                        <div class="nav-item" onclick="showSection('admin')">
+                            ⚙️ Yönetim
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">Kategoriler</div>
+                        <div class="category-item ${window.shaplatState.selectedCategory === 'all' ? 'active' : ''}" 
+                             onclick="selectCategory('all')">
+                            <div class="category-dot"></div>
+                            <span>Tümü</span>
+                        </div>
+                        ${window.shaplatState.categories.map(cat => `
+                            <div class="category-item ${window.shaplatState.selectedCategory === cat ? 'active' : ''}" 
+                                 onclick="selectCategory('${cat}')">
+                                <div class="category-dot"></div>
+                                <span>${cat}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="user-section">
+                        <div class="user-card" onclick="showSection('profile')">
+                            <div class="user-avatar">${window.shaplatState.currentUser.name[0].toUpperCase()}</div>
+                            <div>
+                                <div style="font-weight: 700; margin-bottom: 2px; font-size: 0.85rem;">${window.shaplatState.currentUser.name}</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">
+                                    ${window.shaplatState.currentUser.anonymous ? 'Misafir' : window.shaplatState.currentUser.email}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content">
+                    <div id="random" class="section active">
+                        <div class="search-container">
+                            <div class="search-box">
+                                <input type="text" class="search-input" id="global-search" placeholder="🔍 İçerik ara (başlık, açıklama, etiket)..." oninput="handleSearch(event)">
+                                <div class="search-icon">🔎</div>
+                                <div class="search-results" id="search-results"></div>
+                            </div>
+                        </div>
+                        <div class="content-display" id="random-content">
+                            <div class="loading-spinner">Yükleniyor...</div>
+                        </div>
+                    </div>
+
+                    <div id="trends" class="section">
+                        <div class="trends-container">
+                            <h2 class="section-header">🔥 Trendler</h2>
+                            <div class="trends-grid" id="trends-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="favorites" class="section">
+                        <div class="trends-container">
+                            <h2 class="section-header">❤️ Favoriler</h2>
+                            <div class="trends-grid" id="favorites-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="profile" class="section">
+                        <div class="profile-container">
+                            <div class="profile-header">
+                                <div class="profile-avatar-large">${window.shaplatState.currentUser.name[0].toUpperCase()}</div>
+                                <div class="profile-info">
+                                    <h1 class="profile-name">${window.shaplatState.currentUser.name}</h1>
+                                    <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">
+                                        ${window.shaplatState.currentUser.anonymous ? 'Misafir Kullanıcı' : window.shaplatState.currentUser.email}
+                                    </p>
+                                    <div class="profile-stats">
+                                        <div class="profile-stat">
+                                            <div class="profile-stat-value">${window.shaplatState.currentUser.shaplatCount || 0}</div>
+                                            <div class="profile-stat-label">Shaplat</div>
+                                        </div>
+                                        <div class="profile-stat">
+                                            <div class="profile-stat-value">${window.shaplatState.currentUser.favoriteCount || 0}</div>
+                                            <div class="profile-stat-label">Favori</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-settings">
+                                <h3 style="margin-bottom: 20px; font-size: 1.3rem; font-weight: 800;">⚙️ Hesap Ayarları</h3>
+                                ${window.shaplatState.currentUser.anonymous ? `
+                                    <div class="firebase-warning">
+                                        ⚠️ Misafir olarak giriş yaptınız. Favorilerinizi kaydetmek için giriş yapın veya kayıt olun.
+                                    </div>
+                                    <button class="btn btn-primary" onclick="showAuthModal('register')">
+                                        📝 Kayıt Ol
+                                    </button>
+                                    <button class="btn btn-outline" onclick="showAuthModal('login')" style="margin-left: 10px;">
+                                        🔐 Giriş Yap
+                                    </button>
+                                ` : `
+                                    <div class="form-group">
+                                        <label class="form-label">İsim</label>
+                                        <input type="text" id="profile-name" class="form-input" value="${window.shaplatState.currentUser.name}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">E-posta</label>
+                                        <input type="email" id="profile-email" class="form-input" value="${window.shaplatState.currentUser.email || ''}" disabled>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="updateProfile()">
+                                        💾 Kaydet
+                                    </button>
+                                    <button class="btn btn-outline" onclick="logout()" style="margin-left: 10px;">
+                                        🚪 Çıkış Yap
+                                    </button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="notifications" class="section">
+                        <div class="notifications-panel">
+                            <h2 class="section-header">🔔 Bildirimler</h2>
+                            <div id="notifications-list"></div>
+                        </div>
+                    </div>
+
+                    <div id="about" class="section">
+                        <div class="info-container">
+                            <h1 class="info-title">📖 Hakkımızda</h1>
+                            <p class="info-text">
+                                <strong>Shaplat</strong>, internetin sınırsız dünyasında kaybolmuş hazineleri keşfetmeniz için tasarlanmış bir platformdur. 
+                                Her gün milyonlarca içerik üretilirken, gerçekten değerli ve ilginç olanları bulmak giderek zorlaşıyor.
+                            </p>
+                            <p class="info-text">
+                                Biz bu sorunu çözmek için yola çıktık. Web siteleri, video içerikler, müzik, oyunlar ve daha fazlası arasından 
+                                özenle seçilmiş içerikleri sizlerle buluşturuyoruz. Her tıklamada yeni bir keşif, her keşifte yeni bir ilham!
+                            </p>
+                            <p class="info-text">
+                                <strong>Klavye Kısayolları:</strong><br>
+                                • Space: SHAPLAT<br>
+                                • ← →: Geri/İleri<br>
+                                • F: Favoriye ekle<br>
+                                • S: Paylaş<br>
+                                • 1-5: Rating ver<br>
+                                • Esc: Menüyü kapat
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="contact" class="section">
+                        <div class="info-container">
+                            <h1 class="info-title">✉️ İletişim</h1>
+                            <p class="info-text">
+                                Sorularınız, önerileriniz veya iş birliği teklifleri için bizimle iletişime geçebilirsiniz.
+                            </p>
+                            <div class="form-group">
+                                <label class="form-label">İsim</label>
+                                <input type="text" id="contact-name" class="form-input" placeholder="Adınız">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">E-posta</label>
+                                <input type="email" id="contact-email" class="form-input" placeholder="E-posta adresiniz">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mesaj</label>
+                                <textarea id="contact-message" class="form-input" placeholder="Mesajınız..."></textarea>
+                            </div>
+                            <button class="btn btn-primary" onclick="sendContact()">
+                                📤 Gönder
+                            </button>
+                            <div style="margin-top: 40px; padding-top: 25px; border-top: 1px solid var(--border);">
+                                <p class="info-text"><strong>E-posta:</strong> info@shaplat.com</p>
+                                <p class="info-text"><strong>Sosyal:</strong> @shaplat</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${window.shaplatState.currentUser.role === 'admin' ? `
+                    <div id="admin" class="section">
+                        <div class="admin-container">
+                            <div class="admin-header">
+                                <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 6px;">⚙️ Yönetim Paneli</h1>
+                                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">Tüm içerikleri yönetin</p>
+                                <div class="admin-search">
+                                    <input type="text" class="search-input" id="admin-search" placeholder="🔍 İçerik veya link ara..." oninput="filterAdminContents()">
+                                </div>
+                                <div class="admin-stats" id="admin-stats"></div>
+                            </div>
+                            <div class="admin-tabs">
+                                <button class="admin-tab active" onclick="showAdminTab('contents')">📋 İçerikler</button>
+                                <button class="admin-tab" onclick="showAdminTab('bulk')">⚡ Toplu Ekle</button>
+                                <button class="admin-tab" onclick="showAdminTab('add')">➕ Tek Ekle</button>
+                                ${!isFirebaseConfigured ? '<button class="admin-tab" onclick="showAdminTab(\'firebase\')">🔥 Firebase</button>' : ''}
+                                <button class="admin-tab" onclick="showAdminTab('categories')">📁 Kategoriler</button>
+                            </div>
+                            <div id="admin-content"></div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+            const sidebar = document.getElementById('sidebar');
+            sidebar.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            sidebar.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {passive: true});
+
+            document.addEventListener('click', (e) => {
+                const searchResults = document.getElementById('search-results');
+                const searchBox = document.querySelector('.search-box');
+                if (searchResults && !searchBox.contains(e.target)) {
+                    searchResults.classList.remove('active');
+                }
+            });
+
+            await shaplatRandom();
+            
+            renderTrends();
+            renderFavorites();
+            renderNotifications();
+            updateAdminStats();
+            
+            if (window.shaplatState.currentUser.role === 'admin') {
+                showAdminTab('contents');
+            }
+        }
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar.classList.contains('mobile-active')) {
+                    sidebar.classList.remove('mobile-active');
+                }
+            }
+        }
+
+        window.handleSearch = function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('search-results');
+            
+            if (query.length < 2) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const results = window.shaplatState.contents.filter(c => 
+                c.title.toLowerCase().includes(query) ||
+                c.description.toLowerCase().includes(query) ||
+                c.tags.some(tag => tag.toLowerCase().includes(query)) ||
+                c.category.toLowerCase().includes(query)
+            ).slice(0, 8);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="empty-state"><h3>Sonuç bulunamadı</h3></div>';
+                resultsContainer.classList.add('active');
+                return;
+            }
+
+            resultsContainer.innerHTML = results.map(content => `
+                <div class="search-result-item" onclick="viewContentFromSearch('${content.id}')">
+                    <div class="search-result-title">${content.title}</div>
+                    <div class="search-result-meta">
+                        ${content.category} • ⭐ ${(content.rating || 0).toFixed(1)} • 👁️ ${content.viewCount || 0}
+                    </div>
+                </div>
+            `).join('');
+            resultsContainer.classList.add('active');
+        };
+
+        window.viewContentFromSearch = async function(contentId) {
+            document.getElementById('search-results').classList.remove('active');
+            document.getElementById('global-search').value = '';
+            await viewContent(contentId);
+        };
+
+        async function loadContents() {
+            if (isFirebaseConfigured) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, 'contents'));
+                    window.shaplatState.contents = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                } catch (error) {
+                    console.error('Firestore yükleme hatası:', error);
+                    window.shaplatState.contents = getDefaultContents();
+                }
+            } else {
+                const savedContents = localStorage.getItem('shaplatContents');
+                if (savedContents) {
+                    window.shaplatState.contents = JSON.parse(savedContents);
+                } else {
+                    window.shaplatState.contents = getDefaultContents();
+                    localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+                }
+            }
+        }
+
+        function getDefaultContents() {
+            return [
+                {
+                    id: '1',
+                    title: 'Poolside FM',
+                    description: 'Nostaljik yaz hissi veren chill müzik radyosu. Rahatlamak ve dinlenmek için mükemmel.',
+                    url: 'https://poolside.fm',
+                    image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800',
+                    category: 'Müzik',
+                    tags: ['müzik', 'rahatlatıcı', 'radyo'],
+                    rating: 4.5,
+                    ratingCount: 10,
+                    viewCount: 50,
+                    favoriteCount: 15
+                },
+                {
+                    id: '2',
+                    title: 'Noisli',
+                    description: 'Ortam sesleri ile odaklanmanızı artırın. Çalışma ve odaklanma için ideal.',
+                    url: 'https://noisli.com',
+                    image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800',
+                    category: 'Araçlar & Uygulamalar',
+                    tags: ['ses', 'odaklanma', 'rahatlatıcı'],
+                    rating: 4.7,
+                    ratingCount: 8,
+                    viewCount: 35,
+                    favoriteCount: 12
+                },
+                {
+                    id: '3',
+                    title: 'The Useless Web',
+                    description: 'İnternetteki en anlamsız ama eğlenceli sitelere rastgele yönlendirir.',
+                    url: 'https://theuselessweb.com',
+                    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
+                    category: 'Eğlence',
+                    tags: ['eğlence', 'rastgele', 'web'],
+                    rating: 4.2,
+                    ratingCount: 15,
+                    viewCount: 80,
+                    favoriteCount: 20
+                }
+            ];
+        }
+
+        function loadNotifications() {
+            const saved = localStorage.getItem('notifications_' + window.shaplatState.currentUser.id);
+            window.shaplatState.notifications = saved ? JSON.parse(saved) : [];
+        }
+
+        function addNotification(text, type = 'info') {
+            const notification = {
+                id: Date.now(),
+                text,
+                type,
+                time: new Date().toLocaleString('tr-TR'),
+                read: false
+            };
+            window.shaplatState.notifications.unshift(notification);
+            localStorage.setItem('notifications_' + window.shaplatState.currentUser.id, 
+                JSON.stringify(window.shaplatState.notifications));
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notifications-list');
+            if (!container) return;
+
+            if (window.shaplatState.notifications.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>Henüz bildirim yok</h3></div>';
+                return;
+            }
+
+            container.innerHTML = window.shaplatState.notifications.map(notif => `
+                <div class="notification-item ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})">
+                    <div class="notification-icon">
+                        ${notif.type === 'reply' ? '💬' : notif.type === 'favorite' ? '❤️' : '📢'}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-text">${notif.text}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.markAsRead = function(id) {
+            const notif = window.shaplatState.notifications.find(n => n.id === id);
+            if (notif && !notif.read) {
+                notif.read = true;
+                localStorage.setItem('notifications_' + window.shaplatState.currentUser.id, 
+                    JSON.stringify(window.shaplatState.notifications));
+                renderNotifications();
+                
+                const badge = document.querySelector('.notification-badge');
+                const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
+                if (badge) {
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                    } else {
+                        badge.remove();
+                    }
+                }
+            }
+        };
+
+        window.showSection = function(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(section).classList.add('active');
+            event.target.classList.add('active');
+
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('mobile-active');
+            }
+
+            if (section === 'trends') renderTrends();
+            else if (section === 'favorites') renderFavorites();
+            else if (section === 'notifications') renderNotifications();
+        };
+
+        window.selectCategory = function(category) {
+            window.shaplatState.selectedCategory = category;
+            
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        };
+
+        window.toggleTagFilter = function(tag) {
+            const index = window.shaplatState.selectedTags.indexOf(tag);
+            if (index > -1) {
+                window.shaplatState.selectedTags.splice(index, 1);
+            } else {
+                window.shaplatState.selectedTags.push(tag);
+            }
+            
+            event.target.classList.toggle('selected');
+        };
+
+        window.undoShaplat = async function() {
+            if (window.shaplatState.contentHistory.length === 0) {
+                showNotification('⚠️ Geri alınacak içerik yok!');
+                return;
+            }
+
+            const contentCard = document.querySelector('.content-card');
+            
+            if (contentCard) {
+                contentCard.classList.add('fade-out');
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            const previousContent = window.shaplatState.contentHistory.pop();
+            displayContent(previousContent);
+            showNotification('↩️ Önceki içeriğe dönüldü');
+        };
+
+        window.shaplatRandom = async function() {
+            if (window.shaplatState.currentContent) {
+                window.shaplatState.contentHistory.push(window.shaplatState.currentContent);
+                
+                if (window.shaplatState.contentHistory.length > 10) {
+                    window.shaplatState.contentHistory.shift();
+                }
+            }
+
+            const contentCard = document.querySelector('.content-card');
+            
+            if (contentCard) {
+                contentCard.classList.add('fade-out');
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            let filtered = [...window.shaplatState.contents];
+
+            if (window.shaplatState.selectedTags.length > 0) {
+                filtered = filtered.filter(c => 
+                    window.shaplatState.selectedTags.some(tag => c.tags.includes(tag))
+                );
+            } else if (window.shaplatState.selectedCategory !== 'all') {
+                filtered = filtered.filter(c => c.category === window.shaplatState.selectedCategory);
+            }
+
+            if (filtered.length === 0) {
+                showNotification('⚠️ Bu filtrede içerik yok!');
+                return;
+            }
+
+            const randomContent = filtered[Math.floor(Math.random() * filtered.length)];
+            
+            randomContent.viewCount = (randomContent.viewCount || 0) + 1;
+            window.shaplatState.currentUser.shaplatCount = (window.shaplatState.currentUser.shaplatCount || 0) + 1;
+            
+            if (isFirebaseConfigured) {
+                try {
+                    await updateDoc(doc(db, 'contents', randomContent.id), {
+                        viewCount: increment(1)
+                    });
+                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
+                        shaplatCount: increment(1)
+                    });
+                } catch (error) {
+                    console.error('Güncelleme hatası:', error);
+                }
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
+                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+            }
+            
+            displayContent(randomContent);
+            updateProfileStats();
+        };
+
+        function updateProfileStats() {
+            const shaplatStat = document.querySelector('.profile-stat-value');
+            if (shaplatStat) {
+                shaplatStat.textContent = window.shaplatState.currentUser.shaplatCount || 0;
+            }
+        }
+
+        function displayContent(content) {
+            window.shaplatState.currentContent = content;
+            const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
+            const userRating = userRatings[`${window.shaplatState.currentUser.id}_${content.id}`] || 0;
+            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+            const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === content.id);
+
+            const contentHTML = `
+                <div class="content-card fade-in">
+                    <img src="${content.image}" alt="${content.title}" class="content-image"
+                         onerror="this.src='https://via.placeholder.com/650x220?text=${encodeURIComponent(content.title)}'">
+                    <div class="content-body">
+                        <div class="content-meta">
+                            <span class="content-category">${content.category}</span>
+                            <div class="content-stats">
+                                <div class="stat">
+                                    <span>👁️</span>
+                                    <span>${content.viewCount || 0}</span>
+                                </div>
+                                <div class="stat">
+                                    <span>❤️</span>
+                                    <span>${content.favoriteCount || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="content-title">${content.title}</h2>
+                        <p class="content-description">${content.description}</p>
+
+                        <div class="content-url">
+                            <span>🔗</span>
+                            <span>${content.url}</span>
+                        </div>
+
+                        <div class="tags-row">
+                            ${content.tags.map(tag => `
+                                <span class="tag ${window.shaplatState.selectedTags.includes(tag) ? 'selected' : ''}" 
+                                      onclick="toggleTagFilter('${tag}')">#${tag}</span>
+                            `).join('')}
+                        </div>
+
+                        <div class="rating-box">
+                            <div class="rating-header">
+                                <div class="rating-score">
+                                    <div class="rating-number">${(content.rating || 0).toFixed(1)}</div>
+                                    <div class="rating-max">/ 5.0</div>
+                                </div>
+                                <div class="rating-count">
+                                    ${content.ratingCount || 0} değerlendirme
+                                </div>
+                            </div>
+                            <div class="rating-stars">
+                                ${[1, 2, 3, 4, 5].map(star => `
+                                    <span class="star ${star <= userRating ? 'active' : ''}" 
+                                          onclick="rateContent('${content.id}', ${star})">★</span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="content-actions">
+                            <button class="btn btn-primary" onclick="window.open('${content.url}', '_blank')">
+                                🚀 Ziyaret Et
+                            </button>
+                            <button class="btn ${isFavorite ? 'btn-outline' : 'btn-success'}" 
+                                    onclick="toggleFavorite('${content.id}', event)">
+                                ${isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle'}
+                            </button>
+                            <button class="btn btn-outline" onclick="shareContent('${content.id}')">
+                                📤 Paylaş
+                            </button>
+                        </div>
+
+                        <div class="shaplat-controls">
+                            <button class="btn-undo" onclick="undoShaplat()" ${window.shaplatState.contentHistory.length === 0 ? 'disabled' : ''}>
+                                ↩️ Geri Al
+                            </button>
+                            <button class="btn-shaplat" onclick="shaplatRandom()">
+                                👏 SHAPLAT!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('random-content').innerHTML = contentHTML;
+        }
+
+        window.rateContent = async function(contentId, rating) {
+            const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
+            const key = `${window.shaplatState.currentUser.id}_${contentId}`;
+            const oldRating = userRatings[key] || 0;
+            userRatings[key] = rating;
+            localStorage.setItem('userRatings', JSON.stringify(userRatings));
+
+            const content = window.shaplatState.contents.find(c => c.id === contentId);
+            if (oldRating === 0) {
+                content.rating = ((content.rating * content.ratingCount) + rating) / (content.ratingCount + 1);
+                content.ratingCount++;
+            } else {
+                content.rating = ((content.rating * content.ratingCount) - oldRating + rating) / content.ratingCount;
+            }
+
+            if (isFirebaseConfigured) {
+                try {
+                    await updateDoc(doc(db, 'contents', contentId), {
+                        rating: content.rating,
+                        ratingCount: content.ratingCount
+                    });
+                } catch (error) {
+                    console.error('Rating güncelleme hatası:', error);
+                }
+            } else {
+                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+            }
+
+            showNotification(`✅ ${rating} yıldız verdiniz!`);
+            
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+
+            document.querySelector('.rating-number').textContent = content.rating.toFixed(1);
+            document.querySelector('.rating-count').textContent = `${content.ratingCount} değerlendirme`;
+        };
+
+        window.toggleFavorite = async function(contentId, event) {
+            if (window.shaplatState.currentUser.anonymous) {
+                showNotification('⚠️ Favorilere eklemek için giriş yapın!');
+                showAuthModal('login');
+                return;
+            }
+
+            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+            const existingIndex = userFavorites.findIndex(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
+            const content = window.shaplatState.contents.find(c => c.id === contentId);
+
+            if (existingIndex > -1) {
+                userFavorites.splice(existingIndex, 1);
+                content.favoriteCount = Math.max(0, (content.favoriteCount || 0) - 1);
+                window.shaplatState.currentUser.favoriteCount = Math.max(0, (window.shaplatState.currentUser.favoriteCount || 0) - 1);
+                showNotification('💔 Favorilerden kaldırıldı');
+            } else {
+                userFavorites.push({ userId: window.shaplatState.currentUser.id, contentId });
+                content.favoriteCount = (content.favoriteCount || 0) + 1;
+                window.shaplatState.currentUser.favoriteCount = (window.shaplatState.currentUser.favoriteCount || 0) + 1;
+                showNotification('❤️ Favorilere eklendi!');
+                addNotification(`"${content.title}" favorilerinize eklendi!`, 'favorite');
+                
+                if (event) {
+                    createHeartBurst(event.clientX, event.clientY);
+                }
+            }
+
+            localStorage.setItem('userFavorites', JSON.stringify(userFavorites));
+            
+            if (isFirebaseConfigured) {
+                try {
+                    await updateDoc(doc(db, 'contents', contentId), {
+                        favoriteCount: content.favoriteCount
+                    });
+                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
+                        favoriteCount: window.shaplatState.currentUser.favoriteCount
+                    });
+                } catch (error) {
+                    console.error('Favori güncelleme hatası:', error);
+                }
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
+                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+            }
+
+            const favoriteBtn = event.target.closest('button');
+            const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
+            favoriteBtn.className = isFavorite ? 'btn btn-outline' : 'btn btn-success';
+            favoriteBtn.innerHTML = isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle';
+
+            const stats = document.querySelectorAll('.stat');
+            stats.forEach(stat => {
+                if (stat.textContent.includes('❤️')) {
+                    stat.querySelector('span:last-child').textContent = content.favoriteCount || 0;
+                }
+            });
+
+            renderFavorites();
+        };
+
+        function createHeartBurst(x, y) {
+            const burst = document.createElement('div');
+            burst.className = 'heart-burst';
+            burst.style.left = x + 'px';
+            burst.style.top = y + 'px';
+
+            for (let i = 0; i < 12; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                heart.textContent = '❤️';
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 80 + Math.random() * 40;
+                heart.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                heart.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                heart.style.animationDelay = Math.random() * 0.2 + 's';
+                burst.appendChild(heart);
+            }
+
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 1000);
+        }
+
+        window.shareContent = function(contentId) {
+            const content = window.shaplatState.contents.find(c => c.id === contentId);
+            if (navigator.share) {
+                navigator.share({
+                    title: content.title,
+                    text: content.description,
+                    url: content.url
+                });
+            } else {
+                navigator.clipboard.writeText(content.url);
+                showNotification('📋 Link kopyalandı!');
+            }
+        };
+
+        function renderTrends() {
+            const sortedContents = [...window.shaplatState.contents].sort((a, b) => {
+                const scoreA = ((a.viewCount || 0) * 0.3) + ((a.favoriteCount || 0) * 0.4) + ((a.rating || 0) * (a.ratingCount || 0) * 0.3);
+                const scoreB = ((b.viewCount || 0) * 0.3) + ((b.favoriteCount || 0) * 0.4) + ((b.rating || 0) * (b.ratingCount || 0) * 0.3);
+                return scoreB - scoreA;
+            }).slice(0, 9);
+
+            document.getElementById('trends-list').innerHTML = sortedContents.length > 0 ? sortedContents.map((content, index) => `
+                <div class="trend-card" onclick="viewContent('${content.id}')">
+                    <div class="trend-rank">${index + 1}</div>
+                    <img src="${content.image}" alt="${content.title}" class="trend-image"
+                         onerror="this.src='https://via.placeholder.com/400x160?text=${encodeURIComponent(content.title)}'">
+                    <div class="trend-body">
+                        <span class="tag" style="margin-bottom: 8px;">${content.category}</span>
+                        <h3 class="trend-title">${content.title}</h3>
+                        <div class="trend-stats">
+                            <span>⭐ ${(content.rating || 0).toFixed(1)}</span>
+                            <span>👁️ ${content.viewCount || 0}</span>
+                            <span>❤️ ${content.favoriteCount || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<div class="empty-state"><h3>Henüz trend içerik yok</h3></div>';
+        }
+
+        window.renderFavorites = function() {
+            if (window.shaplatState.currentUser.anonymous) {
+                document.getElementById('favorites-list').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Favorileri görmek için giriş yapın</h3>
+                        <button class="btn btn-primary" onclick="showAuthModal('login')" style="margin-top: 20px;">
+                            🔐 Giriş Yap
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
+            let favoriteContents = userFavorites
+                .filter(f => f.userId === window.shaplatState.currentUser.id)
+                .map(f => window.shaplatState.contents.find(c => c.id === f.contentId))
+                .filter(c => c);
+
+            favoriteContents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+
+            document.getElementById('favorites-list').innerHTML = favoriteContents.length > 0 ? favoriteContents.map(content => `
+                <div class="trend-card" onclick="viewContent('${content.id}')">
+                    <img src="${content.image}" alt="${content.title}" class="trend-image"
+                         onerror="this.src='https://via.placeholder.com/400x160?text=${encodeURIComponent(content.title)}'">
+                    <div class="trend-body">
+                        <span class="tag" style="margin-bottom: 8px;">${content.category}</span>
+                        <h3 class="trend-title">${content.title}</h3>
+                        <div class="trend-stats">
+                            <span>⭐ ${(content.rating || 0).toFixed(1)}</span>
+                            <span>👁️ ${content.viewCount || 0}</span>
+                            <span>❤️ ${content.favoriteCount || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<div class="empty-state"><h3>Henüz favori eklemediniz</h3></div>';
+        };
+
+        window.viewContent = async function(contentId) {
+            const content = window.shaplatState.contents.find(c => c.id === contentId);
+            content.viewCount = (content.viewCount || 0) + 1;
+            
+            if (isFirebaseConfigured) {
+                try {
+                    await updateDoc(doc(db, 'contents', content.id), {
+                        viewCount: increment(1)
+                    });
+                } catch (error) {
+                    console.error('View count güncelleme hatası:', error);
+                }
+            } else {
+                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+            }
+            
+            showSection('random');
+            
+            const contentCard = document.querySelector('.content-card');
+            if (contentCard) {
+                contentCard.classList.add('fade-out');
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+            
+            if (window.shaplatState.currentContent) {
+                window.shaplatState.contentHistory.push(window.shaplatState.currentContent);
+                if (window.shaplatState.contentHistory.length > 10) {
+                    window.shaplatState.contentHistory.shift();
+                }
+            }
+            
+            displayContent(content);
+        };
+
+        window.updateProfile = async function() {
+            const name = document.getElementById('profile-name').value.trim();
+
+            if (!name) {
+                showNotification('⚠️ İsim boş olamaz!');
+                return;
+            }
+
+            window.shaplatState.currentUser.name = name;
+
+            if (isFirebaseConfigured) {
+                try {
+                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
+                        name: name
+                    });
+                } catch (error) {
+                    console.error('Profil güncelleme hatası:', error);
+                }
+            } else {
+                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
+            }
+
+            showNotification('✅ Profil güncellendi!');
+            
+            document.querySelector('.profile-name').textContent = name;
+            document.querySelector('.user-card div div:first-child').textContent = name;
+            document.querySelector('.user-avatar').textContent = name[0].toUpperCase();
+            document.querySelector('.profile-avatar-large').textContent = name[0].toUpperCase();
+        };
+
+        window.sendContact = function() {
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+
+            if (!name || !email || !message) {
+                showNotification('⚠️ Tüm alanları doldurun!');
+                return;
+            }
+
+            showNotification('✅ Mesajınız alındı! Teşekkürler.');
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-email').value = '';
+            document.getElementById('contact-message').value = '';
+        };
+
+        window.toggleMobileMenu = function() {
+            document.getElementById('sidebar').classList.toggle('mobile-active');
+        };
+
+        function updateAdminStats() {
+            if (window.shaplatState.currentUser.role !== 'admin') return;
+            
+            const totalViews = window.shaplatState.contents.reduce((sum, c) => sum + (c.viewCount || 0), 0);
+            const totalFavorites = window.shaplatState.contents.reduce((sum, c) => sum + (c.favoriteCount || 0), 0);
+            
+            const statsContainer = document.getElementById('admin-stats');
+            if (statsContainer) {
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${window.shaplatState.contents.length}</div>
+                        <div class="stat-label">İçerik</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${totalViews}</div>
+                        <div class="stat-label">Görüntüleme</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${totalFavorites}</div>
+                        <div class="stat-label">Favori</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${window.shaplatState.categories.length}</div>
+                        <div class="stat-label">Kategori</div>
+                    </div>
+                `;
+            }
+        }
+
+        window.filterAdminContents = function() {
+            window.shaplatState.searchQuery = document.getElementById('admin-search').value.toLowerCase();
+            renderAdminContents();
+        };
+
+        window.showAdminTab = function(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'contents') renderAdminContents();
+            else if (tab === 'bulk') renderBulkAdd();
+            else if (tab === 'add') renderAddContent();
+            else if (tab === 'firebase') renderFirebaseConfig();
+            else if (tab === 'categories') renderAdminCategories();
+        };
+
+        function renderAdminContents() {
+            let filteredContents = [...window.shaplatState.contents];
+            
+            if (window.shaplatState.searchQuery) {
+                filteredContents = filteredContents.filter(c => 
+                    c.title.toLowerCase().includes(window.shaplatState.searchQuery) ||
+                    c.url.toLowerCase().includes(window.shaplatState.searchQuery)
+                );
+            }
+
+            document.getElementById('admin-content').innerHTML = `
+                <div class="admin-section">
+                    <h3 style="margin-bottom: 18px; font-size: 1.4rem; font-weight: 800;">📋 İçerik Listesi</h3>
+                    ${filteredContents.length === 0 ? '<div class="empty-state"><h3>Sonuç bulunamadı</h3></div>' : `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Başlık</th>
+                                <th>Kategori</th>
+                                <th>Görüntüleme</th>
+                                <th>Puan</th>
+                                <th>Favori</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredContents.map(content => `
+                                <tr>
+                                    <td style="font-weight: 700;">${content.title}</td>
+                                    <td>${content.category}</td>
+                                    <td>👁️ ${content.viewCount || 0}</td>
+                                    <td>⭐ ${(content.rating || 0).toFixed(1)}</td>
+                                    <td>❤️ ${content.favoriteCount || 0}</td>
+                                    <td>
+                                        <button class="btn-small btn-edit" onclick="editContent('${content.id}')">Düzenle</button>
+                                        <button class="btn-small btn-delete" onclick="deleteContent('${content.id}')">Sil</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderBulkAdd() {
+            document.getElementById('admin-content').innerHTML = `
+                <div class="admin-section">
+                    <h3 style="margin-bottom: 18px; font-size: 1.4rem; font-weight: 800;">⚡ Toplu İçerik Ekleme</h3>
+                    
+                    <div class="format-info">
+                        <strong>📝 Format:</strong>
+                        Her satıra bir içerik yazın. Alanları | (pipe) işareti ile ayırın:
+                        <div class="format-example">Başlık|Açıklama|https://url.com|https://image-url.com|Kategori|etiket1,etiket2,etiket3</div>
+                    </div>
+
+                    <div class="bulk-import-area">
+                        <textarea id="bulk-input" class="bulk-textarea" placeholder="Poolside FM|Nostaljik yaz hissi veren chill müzik radyosu.|https://poolside.fm|https://example.com/image.jpg|Müzik|müzik,rahatlatıcı,radyo"></textarea>
+                    </div>
+
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="processBulkAdd()">
+                            ⚡ Toplu Ekle
+                        </button>
+                        <button class="btn btn-outline" onclick="document.getElementById('bulk-input').value = ''">
+                            🗑️ Temizle
+                        </button>
+                    </div>
+
+                    <div id="bulk-result" style="margin-top: 20px;"></div>
+                </div>
+            `;
+        }
+
+        window.processBulkAdd = async function() {
+            const bulkText = document.getElementById('bulk-input').value.trim();
+            
+            if (!bulkText) {
+                showNotification('⚠️ İçerik girişi boş!');
+                return;
+            }
+
+            const lines = bulkText.split('\n').filter(line => line.trim());
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+
+            const existingUrls = window.shaplatState.contents.map(c => c.url.toLowerCase());
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const parts = line.split('|').map(p => p.trim());
+
+                if (parts.length !== 6) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: Yanlış format`);
+                    continue;
+                }
+
+                const [title, description, url, image, category, tagsStr] = parts;
+                
+                if (!title || !description || !url || !image || !category || !tagsStr) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: Boş alan var`);
+                    continue;
+                }
+
+                if (existingUrls.includes(url.toLowerCase())) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: URL kayıtlı`);
+                    continue;
+                }
+
+                if (!window.shaplatState.categories.includes(category)) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: Geçersiz kategori`);
+                    continue;
+                }
+
+                const tags = tagsStr.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
+
+                if (tags.length === 0) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: Etiket gerekli`);
+                    continue;
+                }
+
+                const contentData = {
+                    title,
+                    description,
+                    url,
+                    image,
+                    category,
+                    tags,
+                    rating: 0,
+                    ratingCount: 0,
+                    viewCount: 0,
+                    favoriteCount: 0
+                };
+
+                try {
+                    if (isFirebaseConfigured) {
+                        const docRef = await addDoc(collection(db, 'contents'), contentData);
+                        contentData.id = docRef.id;
+                    } else {
+                        contentData.id = Date.now().toString() + '_' + i;
+                    }
+                    
+                    window.shaplatState.contents.push(contentData);
+                    existingUrls.push(url.toLowerCase());
+                    successCount++;
+                } catch (error) {
+                    errorCount++;
+                    errors.push(`Satır ${i + 1}: Hata`);
+                }
+            }
+
+            if (!isFirebaseConfigured) {
+                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
+            }
+
+            let resultHTML = `
+                <div class="admin-section">
+                    <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 15px;">📊 Sonuç</h4>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: var(--success);">${successCount}</div>
+                            <div class="stat-label">Başarılı</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" style="color: var(--danger);">${errorCount}</div>
+                            <div class="stat-label">Hatalı</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('bulk-result').innerHTML = resultHTML;
+            updateAdminStats();
+            
+            if (successCount > 0) {
+                showNotification(`✅ ${successCount} içerik eklendi!`);
+            }
+        };
+
+        function renderAddContent() {
+            const content = window.shaplatState.editingContentId ? 
+                window.shaplatState.contents.find(c => c.id === window.shaplatState.editingContentId) : null;
+            
+            document.getElementById('admin-content').innerHTML = `
+                <div class="admin-section">
+                    <h3 style="margin-bottom: 20px; font-size: 1.4rem; font-weight: 800;">
+                        ${window.shaplatState.editingContentId ? '✏️ İçerik Düzenle' : '➕ Yeni İçerik Ekle'}
+                    </h3>
+                    <div class="form-group">
+                        <label class="form-label">Başlık</label>
+                        <input type="text" id="content-title" class="form-input" 
+                               value="${content ? content.title : ''}" placeholder="İçerik başlığı">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Açıklama</label>
+                        <textarea id="content-description" class="form-input" placeholder="İçerik açıklaması">${content ? content.description : ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">URL</label>
+                        <input type="text" id="content-url" class="form-input" 
+                               value="${content ? content.url : ''}" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Görsel URL</label>
+                        <input type="text" id="content-image" class="form-input" 
+                               value="${content ? content.image : ''}" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kategori</label>
+                        <select id="content-category" class="form-input">
+                            ${window.shaplatState.categories.map(cat => `
+                                <option value="${cat}" ${content && content.category === cat ? 'selected' : ''}>${cat}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Etiketler (Enter ile ekleyin)</label>
+                        <div class="tags-input-box" id="tags-input" onclick="document.getElementById('tag-field').focus()">
+                            <input type="text" id="tag-field" class="tags-input-field" 
+                                   placeholder="Etiket ekle..." onkeydown="handleTagInput(event)">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="saveContent()">
+                            ${window.shaplatState.editingContentId ? '💾 Güncelle' : '➕ Ekle'}
+                        </button>
+                        ${window.shaplatState.editingContentId ? '<button class="btn btn-outline" onclick="cancelEdit()">❌ İptal</button>' : ''}
+                    </div>
+                </div>
+            `;
+
+            if (content) {
+                window.shaplatState.currentTags = [...content.tags];
+                updateTagsDisplay();
+            } else {
