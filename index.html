@@ -826,45 +826,171 @@
         var canvas = document.getElementById('flagCanvas');
         var ctx = canvas ? canvas.getContext('2d') : null;
 
-        // City Data by Country
+        // ŞEHİR VERİLERİ - ÜLKEYE GÖRE KOORDİNATLAR
         var cityDataByCountry = {
             'TR': [
                 { name: 'İstanbul', lat: 41.0082, lon: 28.9784, price: 5000 },
                 { name: 'Ankara', lat: 39.9334, lon: 32.8597, price: 3000 },
-                { name: 'İzmir', lat: 38.4237, lon: 27.1428, price: 2500 }
+                { name: 'İzmir', lat: 38.4237, lon: 27.1428, price: 2500 },
+                { name: 'Antalya', lat: 36.8969, lon: 30.7133, price: 2200 },
+                { name: 'Bursa', lat: 40.1826, lon: 29.0665, price: 1800 }
             ],
             'US': [
                 { name: 'New York', lat: 40.7128, lon: -74.0060, price: 10000 },
                 { name: 'Los Angeles', lat: 34.0522, lon: -118.2437, price: 9000 },
-                { name: 'Chicago', lat: 41.8781, lon: -87.6298, price: 7000 }
+                { name: 'Chicago', lat: 41.8781, lon: -87.6298, price: 7000 },
+                { name: 'Houston', lat: 29.7604, lon: -95.3698, price: 6000 },
+                { name: 'Miami', lat: 25.7617, lon: -80.1918, price: 5500 },
+                { name: 'San Francisco', lat: 37.7749, lon: -122.4194, price: 8500 },
+                { name: 'Las Vegas', lat: 36.1699, lon: -115.1398, price: 4500 }
             ],
             'GB': [
                 { name: 'London', lat: 51.5074, lon: -0.1278, price: 8000 },
-                { name: 'Manchester', lat: 53.4808, lon: -2.2426, price: 5000 }
+                { name: 'Manchester', lat: 53.4808, lon: -2.2426, price: 5000 },
+                { name: 'Birmingham', lat: 52.4862, lon: -1.8904, price: 4000 },
+                { name: 'Liverpool', lat: 53.4084, lon: -2.9916, price: 3500 }
             ],
             'FR': [
                 { name: 'Paris', lat: 48.8566, lon: 2.3522, price: 7500 },
-                { name: 'Marseille', lat: 43.2965, lon: 5.3698, price: 4500 }
+                { name: 'Marseille', lat: 43.2965, lon: 5.3698, price: 4500 },
+                { name: 'Lyon', lat: 45.7640, lon: 4.8357, price: 4200 },
+                { name: 'Nice', lat: 43.7102, lon: 7.2620, price: 4000 }
             ],
             'DE': [
                 { name: 'Berlin', lat: 52.5200, lon: 13.4050, price: 6500 },
-                { name: 'Munich', lat: 48.1351, lon: 11.5820, price: 6000 }
+                { name: 'Munich', lat: 48.1351, lon: 11.5820, price: 6000 },
+                { name: 'Frankfurt', lat: 50.1109, lon: 8.6821, price: 5500 },
+                { name: 'Hamburg', lat: 53.5511, lon: 9.9937, price: 5200 }
             ],
             'IT': [
                 { name: 'Roma', lat: 41.9028, lon: 12.4964, price: 7000 },
-                { name: 'Milano', lat: 45.4642, lon: 9.1900, price: 6500 }
+                { name: 'Milano', lat: 45.4642, lon: 9.1900, price: 6500 },
+                { name: 'Venezia', lat: 45.4408, lon: 12.3155, price: 5000 },
+                { name: 'Firenze', lat: 43.7696, lon: 11.2558, price: 4500 }
             ],
             'ES': [
                 { name: 'Madrid', lat: 40.4168, lon: -3.7038, price: 6000 },
-                { name: 'Barcelona', lat: 41.3851, lon: 2.1734, price: 5500 }
+                { name: 'Barcelona', lat: 41.3851, lon: 2.1734, price: 5500 },
+                { name: 'Valencia', lat: 39.4699, lon: -0.3763, price: 3500 },
+                { name: 'Sevilla', lat: 37.3891, lon: -5.9845, price: 3200 }
             ],
             'JP': [
                 { name: 'Tokyo', lat: 35.6762, lon: 139.6503, price: 12000 },
-                { name: 'Osaka', lat: 34.6937, lon: 135.5023, price: 9000 }
+                { name: 'Osaka', lat: 34.6937, lon: 135.5023, price: 9000 },
+                { name: 'Kyoto', lat: 35.0116, lon: 135.7681, price: 7000 },
+                { name: 'Yokohama', lat: 35.4437, lon: 139.6380, price: 6500 }
             ],
             'CN': [
                 { name: 'Beijing', lat: 39.9042, lon: 116.4074, price: 11000 },
-                { name: 'Shanghai', lat: 31.2304, lon: 121.4737, price: 10500 }
+                { name: 'Shanghai', lat: 31.2304, lon: 121.4737, price: 10500 },
+                { name: 'Hong Kong', lat: 22.3193, lon: 114.1694, price: 9500 },
+                { name: 'Guangzhou', lat: 23.1291, lon: 113.2644, price: 7500 }
+            ],
+            'RU': [
+                { name: 'Moscow', lat: 55.7558, lon: 37.6173, price: 8000 },
+                { name: 'St Petersburg', lat: 59.9343, lon: 30.3351, price: 6000 },
+                { name: 'Sochi', lat: 43.6028, lon: 39.7342, price: 4000 }
+            ],
+            'BR': [
+                { name: 'São Paulo', lat: -23.5505, lon: -46.6333, price: 7000 },
+                { name: 'Rio de Janeiro', lat: -22.9068, lon: -43.1729, price: 6500 },
+                { name: 'Brasília', lat: -15.7975, lon: -47.8919, price: 5000 }
+            ],
+            'AU': [
+                { name: 'Sydney', lat: -33.8688, lon: 151.2093, price: 8000 },
+                { name: 'Melbourne', lat: -37.8136, lon: 144.9631, price: 7000 },
+                { name: 'Brisbane', lat: -27.4698, lon: 153.0251, price: 5500 }
+            ],
+            'CA': [
+                { name: 'Toronto', lat: 43.6532, lon: -79.3832, price: 7500 },
+                { name: 'Vancouver', lat: 49.2827, lon: -123.1207, price: 7000 },
+                { name: 'Montreal', lat: 45.5017, lon: -73.5673, price: 6000 }
+            ],
+            'AE': [
+                { name: 'Dubai', lat: 25.2048, lon: 55.2708, price: 9000 },
+                { name: 'Abu Dhabi', lat: 24.4539, lon: 54.3773, price: 7500 }
+            ],
+            'SA': [
+                { name: 'Riyadh', lat: 24.7136, lon: 46.6753, price: 6000 },
+                { name: 'Jeddah', lat: 21.5433, lon: 39.1728, price: 5000 }
+            ],
+            'EG': [
+                { name: 'Cairo', lat: 30.0444, lon: 31.2357, price: 5000 },
+                { name: 'Alexandria', lat: 31.2001, lon: 29.9187, price: 3500 }
+            ],
+            'ZA': [
+                { name: 'Cape Town', lat: -33.9249, lon: 18.4241, price: 5500 },
+                { name: 'Johannesburg', lat: -26.2041, lon: 28.0473, price: 5000 }
+            ],
+            'MX': [
+                { name: 'Mexico City', lat: 19.4326, lon: -99.1332, price: 6500 },
+                { name: 'Cancún', lat: 21.1619, lon: -86.8515, price: 4500 }
+            ],
+            'AR': [
+                { name: 'Buenos Aires', lat: -34.6037, lon: -58.3816, price: 6000 },
+                { name: 'Córdoba', lat: -31.4201, lon: -64.1888, price: 3500 }
+            ],
+            'IN': [
+                { name: 'Mumbai', lat: 19.0760, lon: 72.8777, price: 7000 },
+                { name: 'Delhi', lat: 28.7041, lon: 77.1025, price: 6500 },
+                { name: 'Bangalore', lat: 12.9716, lon: 77.5946, price: 5500 }
+            ],
+            'TH': [
+                { name: 'Bangkok', lat: 13.7563, lon: 100.5018, price: 5500 },
+                { name: 'Phuket', lat: 7.8804, lon: 98.3923, price: 4000 }
+            ],
+            'SG': [
+                { name: 'Singapore', lat: 1.3521, lon: 103.8198, price: 9000 }
+            ],
+            'KR': [
+                { name: 'Seoul', lat: 37.5665, lon: 126.9780, price: 8000 },
+                { name: 'Busan', lat: 35.1796, lon: 129.0756, price: 5500 }
+            ],
+            'NL': [
+                { name: 'Amsterdam', lat: 52.3676, lon: 4.9041, price: 6500 },
+                { name: 'Rotterdam', lat: 51.9225, lon: 4.4792, price: 4500 }
+            ],
+            'BE': [
+                { name: 'Brussels', lat: 50.8503, lon: 4.3517, price: 5500 }
+            ],
+            'CH': [
+                { name: 'Zürich', lat: 47.3769, lon: 8.5417, price: 7000 },
+                { name: 'Geneva', lat: 46.2044, lon: 6.1432, price: 6500 }
+            ],
+            'AT': [
+                { name: 'Vienna', lat: 48.2082, lon: 16.3738, price: 6000 }
+            ],
+            'SE': [
+                { name: 'Stockholm', lat: 59.3293, lon: 18.0686, price: 6000 }
+            ],
+            'NO': [
+                { name: 'Oslo', lat: 59.9139, lon: 10.7522, price: 6500 }
+            ],
+            'DK': [
+                { name: 'Copenhagen', lat: 55.6761, lon: 12.5683, price: 6000 }
+            ],
+            'FI': [
+                { name: 'Helsinki', lat: 60.1699, lon: 24.9384, price: 5500 }
+            ],
+            'PL': [
+                { name: 'Warsaw', lat: 52.2297, lon: 21.0122, price: 4500 },
+                { name: 'Kraków', lat: 50.0647, lon: 19.9450, price: 3500 }
+            ],
+            'CZ': [
+                { name: 'Prague', lat: 50.0755, lon: 14.4378, price: 5000 }
+            ],
+            'GR': [
+                { name: 'Athens', lat: 37.9838, lon: 23.7275, price: 4500 }
+            ],
+            'PT': [
+                { name: 'Lisbon', lat: 38.7223, lon: -9.1393, price: 4500 },
+                { name: 'Porto', lat: 41.1579, lon: -8.6291, price: 3500 }
+            ],
+            'IE': [
+                { name: 'Dublin', lat: 53.3498, lon: -6.2603, price: 5500 }
+            ],
+            'NZ': [
+                { name: 'Auckland', lat: -36.8485, lon: 174.7633, price: 5500 }
             ]
         };
 
@@ -935,7 +1061,6 @@
                 var data = dataItem.dataContext;
                 var countryId = data.id;
                 
-                // Check if we have cities for this country
                 if (cityDataByCountry[countryId]) {
                     var zoomAnimation = worldSeries.zoomToDataItem(dataItem);
 
@@ -949,7 +1074,6 @@
                             fill: am5.color(0x666666)
                         });
 
-                        // Add city points
                         addCityPoints(countryId);
 
                         citySeries.show();
