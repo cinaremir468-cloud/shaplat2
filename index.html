@@ -1,3236 +1,998 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shaplat - Keşif Platformu</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root[data-theme="dark"] {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #0a0a0f;
-            --darker: #050508;
-            --card: #15151e;
-            --border: #2a2a3e;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-
-        :root[data-theme="light"] {
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #ffffff;
-            --darker: #f8fafc;
-            --card: #ffffff;
-            --border: #e2e8f0;
-            --text: #1e293b;
-            --text-muted: #64748b;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--dark);
-            color: var(--text);
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        /* Modern Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-            transition: background 0.3s;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: var(--border) transparent;
-        }
-
-        .bg-gradient {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            opacity: 0.3;
-        }
-
-        .gradient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .orb-1 {
-            width: 600px;
-            height: 600px;
-            background: var(--primary);
-            top: -300px;
-            left: -200px;
-        }
-
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: var(--secondary);
-            bottom: -200px;
-            right: -150px;
-            animation-delay: 7s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(100px, -100px) rotate(120deg); }
-            66% { transform: translate(-80px, 80px) rotate(240deg); }
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100vh;
-            background: var(--darker);
-            border-right: 1px solid var(--border);
-            padding: 20px 0;
-            overflow-y: auto;
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
-        }
-
-        .logo-container {
-            padding: 0 20px 20px;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 2rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-
-        .theme-toggle {
-            display: flex;
-            justify-content: center;
-            margin: 15px 20px;
-        }
-
-        .theme-btn {
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .theme-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .sidebar-section {
-            margin-bottom: 18px;
-            padding: 0 15px;
-        }
-
-        .section-title {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            padding: 0 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 4px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            position: relative;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            width: 3px;
-            height: 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            transition: height 0.3s;
-        }
-
-        .nav-item:hover {
-            background: var(--card);
-            transform: translateX(3px);
-        }
-
-        .nav-item:hover::before {
-            height: 100%;
-        }
-
-        .nav-item.active {
-            background: var(--card);
-            color: var(--primary);
-        }
-
-        .nav-item.active::before {
-            height: 100%;
-        }
-
-        .notification-badge {
-            background: var(--danger);
-            color: white;
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: 700;
-            margin-left: auto;
-        }
-
-        .category-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 4px;
-            font-size: 0.8rem;
-        }
-
-        .category-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateX(3px);
-        }
-
-        .category-item.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            font-weight: 700;
-        }
-
-        .category-dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--primary);
-        }
-
-        .active-filters {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin: 15px;
-            font-size: 0.8rem;
-        }
-
-        .filter-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin: 3px;
-        }
-
-        .filter-remove {
-            cursor: pointer;
-            font-weight: 900;
-        }
-
-        .user-section {
-            margin-top: auto;
-            padding: 15px;
-        }
-
-        .user-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .user-card:hover {
-            border-color: var(--primary);
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1rem;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            padding: 25px;
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-        }
-
-        .content-display {
-            max-width: 650px;
-            margin: 0 auto;
-        }
-
-        .content-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .content-card.fade-out {
-            animation: fadeOut 0.3s ease-out forwards;
-        }
-
-        .content-card.fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .content-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
-
-        .content-body {
-            padding: 20px;
-        }
-
-        .content-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .content-category {
-            display: inline-block;
-            padding: 5px 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 7px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .content-stats {
-            display: flex;
-            gap: 12px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .content-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .content-description {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-
-        .content-url {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-bottom: 12px;
-            font-size: 0.8rem;
-        }
-
-        .tags-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 16px;
-        }
-
-        .tag {
-            padding: 5px 12px;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            color: var(--primary);
-            border-radius: 14px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tag:hover {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .tag.selected {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .rating-box {
-            background: var(--darker);
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 16px;
-        }
-
-        .rating-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .rating-score {
-            display: flex;
-            align-items: baseline;
-            gap: 5px;
-        }
-
-        .rating-number {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--warning);
-        }
-
-        .rating-max {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .rating-count {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .rating-stars {
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-        }
-
-        .star {
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: var(--border);
-            transition: all 0.2s;
-        }
-
-        .star:hover,
-        .star.active {
-            color: var(--warning);
-            transform: scale(1.15);
-        }
-
-        .content-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-share {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-share::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-share:hover::before {
-            left: 100%;
-        }
-
-        .btn-back {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .shaplat-button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-        }
-
-        .btn-shaplat {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 14px 35px;
-            font-size: 1rem;
-            font-weight: 800;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-shaplat:hover {
-            transform: translateY(-3px) scale(1.03);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.6);
-        }
-
-        .trends-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            font-size: 2rem;
-            font-weight: 900;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .filters-bar {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 25px;
-        }
-
-        .filters-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .filter-group {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .filter-label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .filter-select {
-            width: 100%;
-            padding: 9px 12px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 0.85rem;
-            font-family: inherit;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .trends-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-        }
-
-        .trend-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s;
-            position: relative;
-        }
-
-        .trend-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
-        }
-
-        .trend-rank {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 1rem;
-            z-index: 10;
-            color: white;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-        }
-
-        .trend-image {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .trend-body {
-            padding: 14px;
-        }
-
-        .trend-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .trend-stats {
-            display: flex;
-            gap: 10px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .profile-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .profile-header {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 30px;
-            margin-bottom: 25px;
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
-
-        .profile-avatar-large {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            font-weight: 900;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-name {
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: 6px;
-        }
-
-        .profile-stats {
-            display: flex;
-            gap: 25px;
-            margin-top: 18px;
-        }
-
-        .profile-stat {
-            text-align: center;
-        }
-
-        .profile-stat-value {
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: var(--primary);
-        }
-
-        .profile-stat-label {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .profile-settings {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 30px;
-        }
-
-        .notifications-panel {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 25px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .notification-item {
-            display: flex;
-            gap: 12px;
-            padding: 14px;
-            background: var(--darker);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .notification-item:hover {
-            background: var(--card);
-            transform: translateX(4px);
-        }
-
-        .notification-item.unread {
-            border-left: 3px solid var(--primary);
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-text {
-            font-weight: 600;
-            margin-bottom: 3px;
-            font-size: 0.9rem;
-        }
-
-        .notification-time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .info-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 40px;
-        }
-
-        .info-title {
-            font-size: 2.2rem;
-            font-weight: 900;
-            margin-bottom: 25px;
-        }
-
-        .info-text {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 11px 14px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 0.9rem;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        textarea.form-input {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 35px;
-            max-width: 450px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            font-weight: 900;
-            margin-bottom: 6px;
-        }
-
-        .auth-divider {
-            text-align: center;
-            margin: 20px 0;
-            color: var(--text-muted);
-            position: relative;
-            font-weight: 600;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: var(--border);
-        }
-
-        .auth-divider::before { left: 0; }
-        .auth-divider::after { right: 0; }
-
-        .social-auth {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-google {
-            background: white;
-            color: #333;
-            font-weight: 700;
-        }
-
-        .btn-anonymous {
-            background: var(--darker);
-            color: var(--text);
-        }
-
-        .auth-switch {
-            text-align: center;
-            margin-top: 18px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .auth-link {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .admin-container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .admin-header {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-            margin-bottom: 25px;
-        }
-
-        .admin-search {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 11px 14px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .admin-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-            margin-top: 22px;
-        }
-
-        .stat-card {
-            background: var(--darker);
-            border: 1px solid var(--border);
-            padding: 22px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 6px;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .admin-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-        }
-
-        .admin-tab {
-            padding: 11px 22px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
-            white-space: nowrap;
-            font-size: 0.85rem;
-        }
-
-        .admin-tab.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: transparent;
-            color: white;
-        }
-
-        .admin-section {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 18px;
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-        }
-
-        .data-table th {
-            background: var(--darker);
-            font-weight: 800;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .data-table tr:hover {
-            background: var(--darker);
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            border-radius: 7px;
-            border: none;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.3s;
-        }
-
-        .btn-edit {
-            background: var(--primary);
-            color: white;
-            margin-right: 5px;
-        }
-
-        .btn-delete {
-            background: var(--danger);
-            color: white;
-        }
-
-        .tags-input-box {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding: 10px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            min-height: 45px;
-        }
-
-        .tag-input-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 4px 10px;
-            border-radius: 7px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tag-remove {
-            cursor: pointer;
-            font-weight: 900;
-        }
-
-        .tags-input-field {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: var(--text);
-            outline: none;
-            min-width: 100px;
-            font-family: inherit;
-        }
-
-        .bulk-import-area {
-            margin-top: 20px;
-        }
-
-        .bulk-textarea {
-            width: 100%;
-            min-height: 300px;
-            padding: 15px;
-            background: var(--darker);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 0.85rem;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            resize: vertical;
-        }
-
-        .bulk-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .format-info {
-            background: var(--darker);
-            border-left: 3px solid var(--primary);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-        }
-
-        .format-info strong {
-            color: var(--primary);
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .format-example {
-            background: var(--card);
-            padding: 10px;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            margin-top: 8px;
-            color: var(--text-muted);
-        }
-
-        .notification {
-            position: fixed;
-            top: 22px;
-            right: 22px;
-            background: var(--card);
-            border: 2px solid var(--success);
-            padding: 14px 24px;
-            border-radius: 12px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-            z-index: 99999;
-            animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(500px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 70px 20px;
-            color: var(--text-muted);
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .loading-spinner {
-            text-align: center;
-            padding: 50px;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-        }
-
-        @media (max-width: 1200px) {
-            .trends-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px;
-            }
-
-            .sidebar.mobile-active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 18px;
-            }
-
-            .trends-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-image {
-                height: 180px;
-            }
-
-            .profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .profile-stats {
-                justify-content: center;
-            }
-
-            .section-header {
-                font-size: 1.6rem;
-            }
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            bottom: 18px;
-            right: 18px;
-            width: 55px;
-            height: 55px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.4rem;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-            z-index: 99;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-menu-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-
-        .firebase-warning {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-gradient">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, User, MapPin, TrendingUp, Wallet, LogOut, Settings, Shield, Home, Menu, X, Plus, Minus, ChevronRight, Flag, PaintBucket, Download, Upload } from 'lucide-react';
+
+// Firebase yapılandırması (Kullanıcının kendi Firebase config'ini buraya eklemesi gerekiyor)
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const CityMarketplace = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [page, setPage] = useState('login');
+  const [cities, setCities] = useState({});
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]);
+  const [users, setUsers] = useState({});
+  const [marketOrders, setMarketOrders] = useState([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [flagEditor, setFlagEditor] = useState({ show: false, colors: ['#FF0000', '#FFFFFF', '#0000FF'] });
+  const [loginForm, setLoginForm] = useState({ email: '', password: '', isRegister: false });
+  const [withdrawalRequest, setWithdrawalRequest] = useState({ amount: '', wallet: '' });
+  const [depositAmount, setDepositAmount] = useState('');
+  const canvasRef = useRef(null);
+  const [drawing, setDrawing] = useState(false);
+  const [currentColor, setCurrentColor] = useState('#FF0000');
+
+  // Başlangıç verileri
+  useEffect(() => {
+    // Demo şehirler
+    const demoCities = {
+      'TR-06': { id: 'TR-06', name: 'Ankara', country: 'Türkiye', price: 1000, owner: null, flag: null, initialPrice: 1000, priceHistory: [] },
+      'TR-34': { id: 'TR-34', name: 'İstanbul', country: 'Türkiye', price: 5000, owner: null, flag: null, initialPrice: 5000, priceHistory: [] },
+      'US-NY': { id: 'US-NY', name: 'New York', country: 'USA', price: 10000, owner: null, flag: null, initialPrice: 10000, priceHistory: [] },
+      'GB-LDN': { id: 'GB-LDN', name: 'London', country: 'UK', price: 8000, owner: null, flag: null, initialPrice: 8000, priceHistory: [] },
+      'FR-PAR': { id: 'FR-PAR', name: 'Paris', country: 'France', price: 7500, owner: null, flag: null, initialPrice: 7500, priceHistory: [] },
+    };
+    setCities(demoCities);
+
+    // Demo kullanıcılar
+    const demoUsers = {
+      'demo1': { id: 'demo1', name: 'Demo User', email: 'demo@test.com', balance: 50000, cities: [], flag: null, isAdmin: true },
+    };
+    setUsers(demoUsers);
+  }, []);
+
+  // Canvas çizim işlemleri
+  const startDrawing = (e) => {
+    setDrawing(true);
+    draw(e);
+  };
+
+  const stopDrawing = () => {
+    setDrawing(false);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.beginPath();
+    }
+  };
+
+  const draw = (e) => {
+    if (!drawing) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = currentColor;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  const saveFlag = () => {
+    const canvas = canvasRef.current;
+    const flagData = canvas.toDataURL();
+    if (currentUser) {
+      setUsers(prev => ({
+        ...prev,
+        [currentUser.id]: { ...prev[currentUser.id], flag: flagData }
+      }));
+      setFlagEditor({ ...flagEditor, show: false });
+    }
+  };
+
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  // Giriş işlemleri
+  const handleLogin = (type) => {
+    if (type === 'google') {
+      const newUser = {
+        id: 'user_' + Date.now(),
+        name: 'Google User',
+        email: 'google@user.com',
+        balance: 10000,
+        cities: [],
+        flag: null,
+        isAdmin: false
+      };
+      setUsers(prev => ({ ...prev, [newUser.id]: newUser }));
+      setCurrentUser(newUser);
+      setBalance(newUser.balance);
+      setPage('home');
+    } else if (type === 'guest') {
+      const newUser = {
+        id: 'guest_' + Date.now(),
+        name: 'Misafir Kullanıcı',
+        email: 'guest@user.com',
+        balance: 5000,
+        cities: [],
+        flag: null,
+        isAdmin: false
+      };
+      setUsers(prev => ({ ...prev, [newUser.id]: newUser }));
+      setCurrentUser(newUser);
+      setBalance(newUser.balance);
+      setPage('home');
+    } else if (type === 'email') {
+      if (loginForm.isRegister) {
+        const newUser = {
+          id: 'user_' + Date.now(),
+          name: loginForm.email.split('@')[0],
+          email: loginForm.email,
+          balance: 10000,
+          cities: [],
+          flag: null,
+          isAdmin: false
+        };
+        setUsers(prev => ({ ...prev, [newUser.id]: newUser }));
+        setCurrentUser(newUser);
+        setBalance(newUser.balance);
+        setPage('home');
+      } else {
+        const user = Object.values(users).find(u => u.email === loginForm.email);
+        if (user) {
+          setCurrentUser(user);
+          setBalance(user.balance);
+          setPage('home');
+        }
+      }
+    }
+  };
+
+  // Şehir satın alma
+  const buyCity = (cityId) => {
+    const city = cities[cityId];
+    if (currentUser && balance >= city.price) {
+      const newBalance = balance - city.price;
+      setBalance(newBalance);
+      
+      const updatedCity = {
+        ...city,
+        owner: currentUser.id,
+        flag: currentUser.flag,
+        priceHistory: [...city.priceHistory, { price: city.price, date: new Date().toISOString(), buyer: currentUser.id }]
+      };
+      
+      setCities(prev => ({ ...prev, [cityId]: updatedCity }));
+      
+      setUsers(prev => ({
+        ...prev,
+        [currentUser.id]: {
+          ...prev[currentUser.id],
+          balance: newBalance,
+          cities: [...prev[currentUser.id].cities, cityId]
+        }
+      }));
+
+      setTransactions(prev => [...prev, {
+        id: Date.now(),
+        type: 'buy',
+        city: city.name,
+        amount: city.price,
+        date: new Date().toISOString()
+      }]);
+
+      setSelectedCity(null);
+    }
+  };
+
+  // Şehir satışa çıkarma
+  const listCityForSale = (cityId, price) => {
+    const city = cities[cityId];
+    if (city.owner === currentUser.id) {
+      setMarketOrders(prev => [...prev, {
+        id: Date.now(),
+        cityId,
+        sellerId: currentUser.id,
+        price: parseFloat(price),
+        date: new Date().toISOString()
+      }]);
+    }
+  };
+
+  // Borsadan şehir satın alma
+  const buyFromMarket = (orderId) => {
+    const order = marketOrders.find(o => o.id === orderId);
+    if (order && balance >= order.price) {
+      const city = cities[order.cityId];
+      const seller = users[order.sellerId];
+      
+      // Alıcı bakiyesini düş
+      const newBalance = balance - order.price;
+      setBalance(newBalance);
+      
+      // Satıcı bakiyesini artır
+      setUsers(prev => ({
+        ...prev,
+        [order.sellerId]: {
+          ...prev[order.sellerId],
+          balance: prev[order.sellerId].balance + order.price,
+          cities: prev[order.sellerId].cities.filter(c => c !== order.cityId)
+        },
+        [currentUser.id]: {
+          ...prev[currentUser.id],
+          balance: newBalance,
+          cities: [...prev[currentUser.id].cities, order.cityId]
+        }
+      }));
+      
+      // Şehir sahipliğini değiştir
+      setCities(prev => ({
+        ...prev,
+        [order.cityId]: {
+          ...prev[order.cityId],
+          owner: currentUser.id,
+          flag: currentUser.flag,
+          price: order.price * 1.1, // %10 fiyat artışı
+          priceHistory: [...prev[order.cityId].priceHistory, {
+            price: order.price,
+            date: new Date().toISOString(),
+            buyer: currentUser.id,
+            seller: order.sellerId
+          }]
+        }
+      }));
+      
+      // Emri kaldır
+      setMarketOrders(prev => prev.filter(o => o.id !== orderId));
+      
+      // İşlemi kaydet
+      setTransactions(prev => [...prev, {
+        id: Date.now(),
+        type: 'buy',
+        city: city.name,
+        amount: order.price,
+        date: new Date().toISOString(),
+        from: order.sellerId
+      }]);
+    }
+  };
+
+  // Para yatırma
+  const deposit = () => {
+    const amount = parseFloat(depositAmount);
+    if (amount > 0 && currentUser) {
+      const newBalance = balance + amount;
+      setBalance(newBalance);
+      setUsers(prev => ({
+        ...prev,
+        [currentUser.id]: { ...prev[currentUser.id], balance: newBalance }
+      }));
+      setTransactions(prev => [...prev, {
+        id: Date.now(),
+        type: 'deposit',
+        amount,
+        date: new Date().toISOString()
+      }]);
+      setDepositAmount('');
+    }
+  };
+
+  // Para çekme
+  const requestWithdrawal = () => {
+    const amount = parseFloat(withdrawalRequest.amount);
+    if (amount > 0 && amount <= balance && withdrawalRequest.wallet) {
+      setTransactions(prev => [...prev, {
+        id: Date.now(),
+        type: 'withdrawal_request',
+        amount,
+        wallet: withdrawalRequest.wallet,
+        date: new Date().toISOString(),
+        status: 'pending'
+      }]);
+      setWithdrawalRequest({ amount: '', wallet: '' });
+    }
+  };
+
+  // Admin: Bakiye ekleme
+  const adminAddBalance = (userId, amount) => {
+    setUsers(prev => ({
+      ...prev,
+      [userId]: { ...prev[userId], balance: prev[userId].balance + amount }
+    }));
+  };
+
+  // Render - Login Sayfası
+  const renderLogin = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 w-full max-w-md border border-white/20">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <MapPin className="w-16 h-16 text-purple-400" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">CityMarket</h1>
+          <p className="text-purple-200">Şehirleri Keşfedin, Sahip Olun, Ticaret Yapın</p>
+        </div>
+
+        {!loginForm.isRegister ? (
+          <div className="space-y-4">
+            <input
+              type="email"
+              placeholder="E-posta"
+              value={loginForm.email}
+              onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+            />
+            <input
+              type="password"
+              placeholder="Şifre"
+              value={loginForm.password}
+              onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+            />
+            <button
+              onClick={() => handleLogin('email')}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition"
+            >
+              Giriş Yap
+            </button>
+            <button
+              onClick={() => setLoginForm({ ...loginForm, isRegister: true })}
+              className="w-full text-purple-300 hover:text-purple-100 transition"
+            >
+              Hesap Oluştur
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <input
+              type="email"
+              placeholder="E-posta"
+              value={loginForm.email}
+              onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+            />
+            <input
+              type="password"
+              placeholder="Şifre"
+              value={loginForm.password}
+              onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+            />
+            <button
+              onClick={() => handleLogin('email')}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition"
+            >
+              Kayıt Ol
+            </button>
+            <button
+              onClick={() => setLoginForm({ ...loginForm, isRegister: false })}
+              className="w-full text-purple-300 hover:text-purple-100 transition"
+            >
+              Giriş Sayfasına Dön
+            </button>
+          </div>
+        )}
+
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-white/20"></div>
+          <span className="px-4 text-white/50 text-sm">veya</span>
+          <div className="flex-1 border-t border-white/20"></div>
+        </div>
+
+        <div className="space-y-3">
+          <button
+            onClick={() => handleLogin('google')}
+            className="w-full bg-white text-gray-800 py-3 rounded-xl font-semibold hover:bg-gray-100 transition flex items-center justify-center gap-2"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google ile Giriş
+          </button>
+          <button
+            onClick={() => handleLogin('guest')}
+            className="w-full bg-white/10 border border-white/20 text-white py-3 rounded-xl font-semibold hover:bg-white/20 transition"
+          >
+            Misafir Olarak Devam Et
+          </button>
+        </div>
+      </div>
     </div>
+  );
 
-    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-
-    <div id="app"></div>
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, increment, query, where, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
-            authDomain: "shaplat-af37d.firebaseapp.com",
-            projectId: "shaplat-af37d",
-            storageBucket: "shaplat-af37d.firebasestorage.app",
-            messagingSenderId: "1032036004493",
-            appId: "1:1032036004493:web:1460aaed627384e88d28c4",
-            measurementId: "G-P3WYFFTGK4"
-        };
-
-        let app, auth, db;
-        let isFirebaseConfigured = false;
-
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            isFirebaseConfigured = true;
-        } catch (error) {
-            console.log('Firebase yapılandırılmamış. Local mod aktif.');
-        }
-
-        window.shaplatState = {
-            currentUser: null,
-            selectedCategory: 'all',
-            selectedTags: [],
-            sortBy: 'rating',
-            currentContent: null,
-            contentHistory: [],
-            historyIndex: -1,
-            contents: [],
-            categories: [
-                'Web Siteleri',
-                'Video İçerikler',
-                'YouTube Kanalları',
-                'Müzik',
-                'Oyunlar',
-                'Teknoloji',
-                'Eğitim',
-                'Sanat & Tasarım',
-                'Sosyal Medya',
-                'Araçlar & Uygulamalar',
-                'App',
-                'Eğlence',
-                'Bilim & Doğa',
-                'Spor',
-                'Yemek & Tarif',
-                'Seyahat',
-                'Finans',
-                'Haberler & Medya',
-                'Diğer'
-            ],
-            currentTags: [],
-            editingContentId: null,
-            notifications: [],
-            searchQuery: '',
-            auth,
-            db,
-            isFirebaseConfigured
-        };
-
-        // Mobile swipe için değişkenler
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        init();
-
-        async function init() {
-            const theme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
+  // Render - Ana Sayfa
+  const renderHome = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800">
+      {/* Navbar */}
+      <nav className="bg-white/10 backdrop-blur-lg border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <MapPin className="w-8 h-8 text-purple-400" />
+              <span className="text-white font-bold text-xl">CityMarket</span>
+            </div>
             
-            if (isFirebaseConfigured) {
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        const userDoc = await getDoc(doc(db, 'users', user.uid));
-                        if (userDoc.exists()) {
-                            window.shaplatState.currentUser = { id: user.uid, ...userDoc.data() };
-                        } else {
-                            window.shaplatState.currentUser = {
-                                id: user.uid,
-                                email: user.email,
-                                name: user.displayName || user.email?.split('@')[0] || 'Kullanıcı',
-                                role: user.email === 'admin@shaplat.com' ? 'admin' : 'user',
-                                anonymous: user.isAnonymous,
-                                shaplatCount: 0,
-                                favoriteCount: 0
-                            };
-                            await setDoc(doc(db, 'users', user.uid), window.shaplatState.currentUser);
-                        }
-                        await renderApp();
-                    } else {
-                        await handleAnonymousAuth();
-                    }
-                });
-            } else {
-                const savedUser = sessionStorage.getItem('currentUser');
-                if (savedUser) {
-                    window.shaplatState.currentUser = JSON.parse(savedUser);
-                } else {
-                    window.shaplatState.currentUser = {
-                        id: 'guest_' + Date.now(),
-                        email: null,
-                        name: 'Misafir',
-                        role: 'user',
-                        anonymous: true,
-                        shaplatCount: 0,
-                        favoriteCount: 0
-                    };
-                    sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
-                }
-                renderApp();
-            }
-        }
+            <div className="hidden md:flex items-center gap-6">
+              <button onClick={() => setPage('home')} className="text-white hover:text-purple-400 transition flex items-center gap-2">
+                <Home className="w-5 h-5" />
+                Ana Sayfa
+              </button>
+              <button onClick={() => setPage('market')} className="text-white hover:text-purple-400 transition flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Borsa
+              </button>
+              <button onClick={() => setPage('wallet')} className="text-white hover:text-purple-400 transition flex items-center gap-2">
+                <Wallet className="w-5 h-5" />
+                Cüzdan
+              </button>
+              <button onClick={() => setPage('profile')} className="text-white hover:text-purple-400 transition flex items-center gap-2">
+                <User className="w-5 h-5" />
+                Profil
+              </button>
+              {currentUser?.isAdmin && (
+                <button onClick={() => setPage('admin')} className="text-white hover:text-purple-400 transition flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Admin
+                </button>
+              )}
+            </div>
 
-        window.toggleTheme = function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        };
+            <div className="flex items-center gap-4">
+              <div className="bg-green-500/20 px-4 py-2 rounded-lg border border-green-500/30">
+                <span className="text-green-400 font-semibold">{balance.toFixed(2)} USDT</span>
+              </div>
+              <button onClick={() => { setCurrentUser(null); setPage('login'); }} className="text-white hover:text-red-400 transition">
+                <LogOut className="w-5 h-5" />
+              </button>
+              <button onClick={() => setShowMobileMenu(!showMobileMenu)} className="md:hidden text-white">
+                {showMobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
 
-        function showAuthModal(mode) {
-            const modalHTML = `
-                <div class="modal active" id="auth-modal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2 class="modal-title">${mode === 'login' ? '🔐 Giriş Yap' : '📝 Kayıt Ol'}</h2>
-                            <p style="color: var(--text-muted); font-weight: 600;">Shaplat'a hoş geldiniz!</p>
-                        </div>
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <div className="md:hidden bg-white/10 backdrop-blur-lg border-b border-white/10">
+          <div className="px-4 py-3 space-y-2">
+            <button onClick={() => { setPage('home'); setShowMobileMenu(false); }} className="w-full text-left text-white hover:text-purple-400 transition py-2">Ana Sayfa</button>
+            <button onClick={() => { setPage('market'); setShowMobileMenu(false); }} className="w-full text-left text-white hover:text-purple-400 transition py-2">Borsa</button>
+            <button onClick={() => { setPage('wallet'); setShowMobileMenu(false); }} className="w-full text-left text-white hover:text-purple-400 transition py-2">Cüzdan</button>
+            <button onClick={() => { setPage('profile'); setShowMobileMenu(false); }} className="w-full text-left text-white hover:text-purple-400 transition py-2">Profil</button>
+            {currentUser?.isAdmin && (
+              <button onClick={() => { setPage('admin'); setShowMobileMenu(false); }} className="w-full text-left text-white hover:text-purple-400 transition py-2">Admin Panel</button>
+            )}
+          </div>
+        </div>
+      )}
 
-                        ${isFirebaseConfigured ? '' : '<div class="firebase-warning">⚠️ Firebase yapılandırılmamış. Google girişi çalışmayabilir. Firebase Console\'da domain ekleyin: shaplat-af37d.firebaseapp.com</div>'}
+      {/* Arama */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Şehir veya kullanıcı ara..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+          />
+        </div>
+      </div>
 
-                        <div>
-                            <div class="form-group">
-                                <label class="form-label">E-posta</label>
-                                <input type="email" id="auth-email" class="form-input" placeholder="ornek@email.com">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Şifre</label>
-                                <input type="password" id="auth-password" class="form-input" placeholder="••••••••">
-                            </div>
-                            ${mode === 'register' ? `
-                            <div class="form-group">
-                                <label class="form-label">İsim</label>
-                                <input type="text" id="auth-name" class="form-input" placeholder="Adınız Soyadınız">
-                            </div>
-                            ` : ''}
-                            <button class="btn btn-primary" style="width: 100%;" onclick="handleEmailAuth('${mode}')">
-                                ${mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol'}
-                            </button>
-                        </div>
-
-                        <div class="auth-divider">veya</div>
-
-                        <div class="social-auth">
-                            <button class="btn btn-google" onclick="handleGoogleAuth()">
-                                🔵 Google ile Devam Et
-                            </button>
-                        </div>
-
-                        <div class="auth-switch">
-                            ${mode === 'login' ? 
-                                'Hesabınız yok mu? <button class="auth-link" onclick="showAuthModal(\'register\')">Kayıt Ol</button>' :
-                                'Zaten hesabınız var mı? <button class="auth-link" onclick="showAuthModal(\'login\')">Giriş Yap</button>'
-                            }
-                        </div>
-
-                        <div class="auth-switch" style="margin-top: 10px;">
-                            <button class="auth-link" onclick="closeAuthModal()">❌ Kapat</button>
-                        </div>
+      {/* Harita ve Şehirler */}
+      <div className="max-w-7xl mx-auto px-4 pb-8">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-4">Şehirler</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Object.values(cities)
+              .filter(city => city.name.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map(city => (
+                <div
+                  key={city.id}
+                  onClick={() => setSelectedCity(city)}
+                  className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700 hover:border-purple-400 transition cursor-pointer"
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-white font-bold text-lg">{city.name}</h3>
+                      <p className="text-gray-400 text-sm">{city.country}</p>
                     </div>
-                </div>
-            `;
-            
-            const existingModal = document.getElementById('auth-modal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-            
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-        }
-
-        window.closeAuthModal = function() {
-            const modal = document.getElementById('auth-modal');
-            if (modal) {
-                modal.remove();
-            }
-        };
-
-        window.handleEmailAuth = async function(mode) {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const name = mode === 'register' ? document.getElementById('auth-name').value : '';
-
-            if (!email || !password || (mode === 'register' && !name)) {
-                showNotification('⚠️ Tüm alanları doldurun!');
-                return;
-            }
-
-            if (isFirebaseConfigured) {
-                try {
-                    let userCredential;
-                    if (mode === 'login') {
-                        userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    } else {
-                        userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                        const userData = {
-                            email,
-                            name,
-                            role: email === 'admin@shaplat.com' ? 'admin' : 'user',
-                            anonymous: false,
-                            shaplatCount: 0,
-                            favoriteCount: 0
-                        };
-                        await setDoc(doc(db, 'users', userCredential.user.uid), userData);
-                    }
-                    closeAuthModal();
-                    showNotification('✅ Başarıyla giriş yapıldı!');
-                } catch (error) {
-                    showNotification('❌ Hata: ' + error.message);
-                }
-            } else {
-                const user = {
-                    id: 'user_' + Date.now(),
-                    email,
-                    name: name || email.split('@')[0],
-                    role: email === 'admin@shaplat.com' ? 'admin' : 'user',
-                    anonymous: false,
-                    shaplatCount: 0,
-                    favoriteCount: 0
-                };
-                login(user);
-                closeAuthModal();
-            }
-        };
-
-        window.handleGoogleAuth = async function() {
-            if (isFirebaseConfigured) {
-                try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
-                    closeAuthModal();
-                    showNotification('✅ Google ile giriş yapıldı!');
-                } catch (error) {
-                    if (error.code === 'auth/unauthorized-domain') {
-                        showNotification('❌ Firebase Console\'da bu domain\'i eklemeniz gerekiyor: ' + window.location.hostname);
-                    } else {
-                        showNotification('❌ Hata: ' + error.message);
-                    }
-                }
-            } else {
-                const user = {
-                    id: 'google_' + Date.now(),
-                    email: 'user@gmail.com',
-                    name: 'Google Kullanıcı',
-                    role: 'user',
-                    anonymous: false,
-                    shaplatCount: 0,
-                    favoriteCount: 0
-                };
-                login(user);
-                closeAuthModal();
-            }
-        };
-
-        window.handleAnonymousAuth = async function() {
-            if (isFirebaseConfigured) {
-                try {
-                    await signInAnonymously(auth);
-                } catch (error) {
-                    console.error('Anonim giriş hatası:', error);
-                }
-            } else {
-                const user = {
-                    id: 'anon_' + Date.now(),
-                    email: null,
-                    name: 'Misafir',
-                    role: 'user',
-                    anonymous: true,
-                    shaplatCount: 0,
-                    favoriteCount: 0
-                };
-                login(user);
-            }
-        };
-
-        function login(user) {
-            window.shaplatState.currentUser = user;
-            sessionStorage.setItem('currentUser', JSON.stringify(user));
-            renderApp();
-        }
-
-        window.logout = async function() {
-            if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-                if (isFirebaseConfigured) {
-                    await auth.signOut();
-                    await handleAnonymousAuth();
-                } else {
-                    window.shaplatState.currentUser = {
-                        id: 'guest_' + Date.now(),
-                        email: null,
-                        name: 'Misafir',
-                        role: 'user',
-                        anonymous: true,
-                        shaplatCount: 0,
-                        favoriteCount: 0
-                    };
-                    sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
-                    renderApp();
-                }
-            }
-        };
-
-        async function renderApp() {
-            await loadContents();
-            loadNotifications();
-            
-            const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
-            
-            document.getElementById('app').innerHTML = `
-                <div class="sidebar" id="sidebar">
-                    <div class="logo-container">
-                        <div class="logo">SHAPLAT</div>
+                    {city.flag && (
+                      <img src={city.flag} alt="flag" className="w-12 h-8 object-cover rounded" />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Fiyat</span>
+                      <span className="text-green-400 font-bold">{city.price.toFixed(2)} USDT</span>
                     </div>
-
-                    <div class="theme-toggle">
-                        <button class="theme-btn" onclick="toggleTheme()">
-                            ${document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️ Light' : '🌙 Dark'} Mode
+                    {city.owner && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm">Sahibi</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPage('profile'); }}
+                          className="text-purple-400 hover:text-purple-300 text-sm"
+                        >
+                          {users[city.owner]?.name || 'Kullanıcı'}
                         </button>
-                    </div>
-
-                    <div class="sidebar-section">
-                        <div class="section-title">Menü</div>
-                        <div class="nav-item active" onclick="showSection('random')">
-                            🎲 Rastgele Keşfet
-                        </div>
-                        <div class="nav-item" onclick="showSection('trends')">
-                            🔥 Trendler
-                        </div>
-                        <div class="nav-item" onclick="showSection('favorites')">
-                            ❤️ Favoriler
-                        </div>
-                        <div class="nav-item" onclick="showSection('profile')">
-                            👤 Profil
-                        </div>
-                        <div class="nav-item" onclick="showSection('notifications')">
-                            🔔 Bildirimler
-                            ${unreadCount > 0 ? `<span class="notification-badge">${unreadCount}</span>` : ''}
-                        </div>
-                        <div class="nav-item" onclick="showSection('about')">
-                            ℹ️ Hakkımızda
-                        </div>
-                        <div class="nav-item" onclick="showSection('contact')">
-                            ✉️ İletişim
-                        </div>
-                        ${window.shaplatState.currentUser.role === 'admin' ? `
-                        <div class="nav-item" onclick="showSection('admin')">
-                            ⚙️ Yönetim
-                        </div>
-                        ` : ''}
-                    </div>
-
-                    <div class="sidebar-section">
-                        <div class="section-title">Kategoriler</div>
-                        <div class="category-item ${window.shaplatState.selectedCategory === 'all' ? 'active' : ''}" 
-                             onclick="selectCategory('all')">
-                            <div class="category-dot"></div>
-                            <span>Tümü</span>
-                        </div>
-                        ${window.shaplatState.categories.map(cat => `
-                            <div class="category-item ${window.shaplatState.selectedCategory === cat ? 'active' : ''}" 
-                                 onclick="selectCategory('${cat}')">
-                                <div class="category-dot"></div>
-                                <span>${cat}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-
-                    ${window.shaplatState.selectedTags.length > 0 ? `
-                    <div class="active-filters">
-                        <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                        ${window.shaplatState.selectedTags.map(tag => `
-                            <span class="filter-tag">
-                                #${tag}
-                                <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
-                            </span>
-                        `).join('')}
-                    </div>
-                    ` : ''}
-
-                    <div class="user-section">
-                        <div class="user-card" onclick="showSection('profile')">
-                            <div class="user-avatar">${window.shaplatState.currentUser.name[0].toUpperCase()}</div>
-                            <div>
-                                <div style="font-weight: 700; margin-bottom: 2px; font-size: 0.85rem;">${window.shaplatState.currentUser.name}</div>
-                                <div style="font-size: 0.7rem; color: var(--text-muted);">
-                                    ${window.shaplatState.currentUser.anonymous ? 'Misafir' : window.shaplatState.currentUser.email}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="main-content">
-                    <div id="random" class="section active">
-                        <div class="content-display" id="random-content">
-                            <div class="loading-spinner">Yükleniyor...</div>
-                        </div>
-                    </div>
-
-                    <div id="trends" class="section">
-                        <div class="trends-container">
-                            <h2 class="section-header">🔥 Trendler</h2>
-                            <div class="trends-grid" id="trends-list"></div>
-                        </div>
-                    </div>
-
-                    <div id="favorites" class="section">
-                        <div class="trends-container">
-                            <h2 class="section-header">❤️ Favoriler</h2>
-                            <div class="filters-bar">
-                                <div class="filters-row">
-                                    <div class="filter-group">
-                                        <label class="filter-label">Sıralama</label>
-                                        <select class="filter-select" id="favorites-sort" onchange="renderFavorites()">
-                                            <option value="rating">⭐ Puana Göre</option>
-                                            <option value="favorites">❤️ Beğeniye Göre</option>
-                                            <option value="views">👁️ Görüntülenmeye Göre</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="trends-grid" id="favorites-list"></div>
-                        </div>
-                    </div>
-
-                    <div id="profile" class="section">
-                        <div class="profile-container">
-                            <div class="profile-header">
-                                <div class="profile-avatar-large">${window.shaplatState.currentUser.name[0].toUpperCase()}</div>
-                                <div class="profile-info">
-                                    <h1 class="profile-name">${window.shaplatState.currentUser.name}</h1>
-                                    <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">
-                                        ${window.shaplatState.currentUser.anonymous ? 'Misafir Kullanıcı' : window.shaplatState.currentUser.email}
-                                    </p>
-                                    <div class="profile-stats">
-                                        <div class="profile-stat">
-                                            <div class="profile-stat-value">${window.shaplatState.currentUser.shaplatCount || 0}</div>
-                                            <div class="profile-stat-label">Shaplat</div>
-                                        </div>
-                                        <div class="profile-stat">
-                                            <div class="profile-stat-value">${window.shaplatState.currentUser.favoriteCount || 0}</div>
-                                            <div class="profile-stat-label">Favori</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="profile-settings">
-                                <h3 style="margin-bottom: 20px; font-size: 1.3rem; font-weight: 800;">⚙️ Hesap Ayarları</h3>
-                                ${window.shaplatState.currentUser.anonymous ? `
-                                    <div class="firebase-warning">
-                                        ⚠️ Misafir olarak giriş yaptınız. Favorilerinizi kaydetmek için giriş yapın veya kayıt olun.
-                                    </div>
-                                    <button class="btn btn-primary" onclick="showAuthModal('register')">
-                                        📝 Kayıt Ol
-                                    </button>
-                                    <button class="btn btn-outline" onclick="showAuthModal('login')" style="margin-left: 10px;">
-                                        🔐 Giriş Yap
-                                    </button>
-                                ` : `
-                                    <div class="form-group">
-                                        <label class="form-label">İsim</label>
-                                        <input type="text" id="profile-name" class="form-input" value="${window.shaplatState.currentUser.name}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">E-posta</label>
-                                        <input type="email" id="profile-email" class="form-input" value="${window.shaplatState.currentUser.email || ''}" disabled>
-                                    </div>
-                                    <button class="btn btn-primary" onclick="updateProfile()">
-                                        💾 Kaydet
-                                    </button>
-                                    <button class="btn btn-outline" onclick="logout()" style="margin-left: 10px;">
-                                        🚪 Çıkış Yap
-                                    </button>
-                                `}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="notifications" class="section">
-                        <div class="notifications-panel">
-                            <h2 class="section-header">🔔 Bildirimler</h2>
-                            <div id="notifications-list"></div>
-                        </div>
-                    </div>
-
-                    <div id="about" class="section">
-                        <div class="info-container">
-                            <h1 class="info-title">📖 Hakkımızda</h1>
-                            <p class="info-text">
-                                <strong style="color: var(--primary); font-size: 1.1rem;">Shaplat</strong>, internetin sınırsız dünyasında kaybolmuş hazineleri keşfetmeniz için tasarlanmış yenilikçi bir keşif platformudur. Her gün milyonlarca içerik üretilirken, gerçekten değerli ve ilginç olanları bulmak giderek zorlaşıyor. İşte tam bu noktada devreye Shaplat giriyor!
-                            </p>
-                            <p class="info-text">
-                                🎯 <strong>Misyonumuz:</strong> İnternetin gizli kalmış incilerini keşfetmenizi sağlamak, dijital dünyada sizi yeni deneyimlerle buluşturmak ve her tıklamada size ilham vermektir.
-                            </p>
-                            <p class="info-text">
-                                ✨ <strong>Nasıl Çalışır?</strong><br>
-                                Kullanımı son derece basit! Ana sayfadaki büyük <strong>SHAPLAT</strong> butonuna tıklayın ve algoritmamızın özenle seçtiği rastgele bir içeriği keşfedin. Web siteleri, YouTube kanalları, müzik servisleri, oyunlar, finans araçları ve daha fazlası arasından binlerce içerik sizleri bekliyor. Beğendiklerinizi favorilere ekleyin, değerlendirin ve keşfetmeye devam edin!
-                            </p>
-                            <p class="info-text">
-                                🌟 <strong>Neden Shaplat?</strong>
-                            </p>
-                            <p class="info-text" style="padding-left: 20px;">
-                                • <strong>Kişiselleştirilmiş Keşif:</strong> Kategori ve etiket filtreleriyle ilgi alanlarınıza özel içerikler bulun<br>
-                                • <strong>Trend Takibi:</strong> En popüler ve beğenilen içerikleri kolayca keşfedin<br>
-                                • <strong>Favori Sistemi:</strong> Beğendiğiniz içerikleri kaydedin ve istediğiniz zaman tekrar ziyaret edin<br>
-                                • <strong>Topluluk Değerlendirmeleri:</strong> Diğer kullanıcıların puanlamalarından faydalanın<br>
-                                • <strong>Sürekli Güncellenen İçerik:</strong> Her gün yeni keşiflerle karşılaşın
-                            </p>
-                            <p class="info-text">
-                                🚀 <strong>İçerik Kategorilerimiz:</strong> Web Siteleri, YouTube Kanalları, Müzik, Oyunlar, Teknoloji, Eğitim, Sanat & Tasarım, Finans Araçları, Mobil Uygulamalar ve daha fazlası!
-                            </p>
-                            <p class="info-text">
-                                💡 <strong>Vizyonumuz:</strong> Shaplat olarak, internetin sonsuz potansiyelini keşfetmenizi kolaylaştıran, eğlenceli ve kullanıcı dostu bir platform olmayı hedefliyoruz. Her bir tıklama, yeni bir dünyaya açılan kapı olsun istiyoruz.
-                            </p>
-                            <p class="info-text" style="margin-top: 30px; padding: 20px; background: var(--darker); border-radius: 10px; border-left: 4px solid var(--primary);">
-                                <strong>🎉 Shaplat'a katılın ve keşfetmeye başlayın!</strong><br>
-                                Favori içeriklerinizi kaydetmek, değerlendirme yapmak ve tüm özelliklere erişmek için ücretsiz hesap oluşturun.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div id="contact" class="section">
-                        <div class="info-container">
-                            <h1 class="info-title">✉️ İletişim</h1>
-                            <p class="info-text">
-                                Sorularınız, önerileriniz veya iş birliği teklifleri için bizimle iletişime geçebilirsiniz. Geri bildirimleriniz bizim için çok değerli!
-                            </p>
-                            <div class="form-group">
-                                <label class="form-label">İsim</label>
-                                <input type="text" id="contact-name" class="form-input" placeholder="Adınız">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">E-posta</label>
-                                <input type="email" id="contact-email" class="form-input" placeholder="E-posta adresiniz">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Mesaj</label>
-                                <textarea id="contact-message" class="form-input" placeholder="Mesajınız..."></textarea>
-                            </div>
-                            <button class="btn btn-primary" onclick="sendContact()">
-                                📤 Gönder
-                            </button>
-                            <div style="margin-top: 40px; padding-top: 25px; border-top: 1px solid var(--border);">
-                                <p class="info-text"><strong>📧 E-posta:</strong> info@shaplat.com</p>
-                                <p class="info-text"><strong>📱 Sosyal Medya:</strong> @shaplat</p>
-                                <p class="info-text"><strong>🌐 Web:</strong> www.shaplat.com</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${window.shaplatState.currentUser.role === 'admin' ? `
-                    <div id="admin" class="section">
-                        <div class="admin-container">
-                            <div class="admin-header">
-                                <h1 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 6px;">⚙️ Yönetim Paneli</h1>
-                                <p style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem;">Tüm içerikleri yönetin</p>
-                                <div class="admin-search">
-                                    <input type="text" class="search-input" id="admin-search" placeholder="🔍 İçerik veya link ara..." oninput="filterAdminContents()">
-                                </div>
-                                <div class="admin-stats" id="admin-stats"></div>
-                            </div>
-                            <div class="admin-tabs">
-                                <button class="admin-tab active" onclick="showAdminTab('contents')">📋 İçerikler</button>
-                                <button class="admin-tab" onclick="showAdminTab('bulk')">⚡ Toplu Ekle</button>
-                                <button class="admin-tab" onclick="showAdminTab('add')">➕ Tek Ekle</button>
-                                ${!isFirebaseConfigured ? '<button class="admin-tab" onclick="showAdminTab(\'firebase\')">🔥 Firebase</button>' : ''}
-                                <button class="admin-tab" onclick="showAdminTab('categories')">📁 Kategoriler</button>
-                            </div>
-                            <div id="admin-content"></div>
-                        </div>
-                    </div>
-                    ` : ''}
-                </div>
-            `;
-
-            const sidebar = document.getElementById('sidebar');
-            sidebar.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, {passive: true});
-
-            sidebar.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, {passive: true});
-
-            await shaplatRandom();
-            
-            renderTrends();
-            renderFavorites();
-            renderNotifications();
-            updateAdminStats();
-            
-            if (window.shaplatState.currentUser.role === 'admin') {
-                showAdminTab('contents');
-            }
-        }
-
-        function handleSwipe() {
-            if (touchEndX < touchStartX - 50) {
-                const sidebar = document.getElementById('sidebar');
-                if (sidebar.classList.contains('mobile-active')) {
-                    sidebar.classList.remove('mobile-active');
-                }
-            }
-        }
-
-        async function loadContents() {
-            if (isFirebaseConfigured) {
-                try {
-                    const querySnapshot = await getDocs(collection(db, 'contents'));
-                    window.shaplatState.contents = querySnapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
-                } catch (error) {
-                    console.error('Firestore yükleme hatası:', error);
-                    window.shaplatState.contents = getDefaultContents();
-                }
-            } else {
-                const savedContents = localStorage.getItem('shaplatContents');
-                if (savedContents) {
-                    window.shaplatState.contents = JSON.parse(savedContents);
-                } else {
-                    window.shaplatState.contents = getDefaultContents();
-                    localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-                }
-            }
-        }
-
-        function getDefaultContents() {
-            return [
-                {
-                    id: '1',
-                    title: 'Poolside FM',
-                    description: 'Nostaljik yaz hissi veren chill müzik radyosu. Rahatlamak ve dinlenmek için mükemmel.',
-                    url: 'https://poolside.fm',
-                    image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800',
-                    category: 'Müzik',
-                    tags: ['müzik', 'rahatlatıcı', 'radyo'],
-                    rating: 4.5,
-                    ratingCount: 10,
-                    viewCount: 50,
-                    favoriteCount: 15
-                },
-                {
-                    id: '2',
-                    title: 'Noisli',
-                    description: 'Ortam sesleri ile odaklanmanızı artırın. Çalışma ve odaklanma için ideal.',
-                    url: 'https://noisli.com',
-                    image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800',
-                    category: 'Araçlar & Uygulamalar',
-                    tags: ['ses', 'odaklanma', 'rahatlatıcı'],
-                    rating: 4.7,
-                    ratingCount: 8,
-                    viewCount: 35,
-                    favoriteCount: 12
-                },
-                {
-                    id: '3',
-                    title: 'The Useless Web',
-                    description: 'İnternetteki en anlamsız ama eğlenceli sitelere rastgele yönlendirir.',
-                    url: 'https://theuselessweb.com',
-                    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
-                    category: 'Eğlence',
-                    tags: ['eğlence', 'rastgele', 'web'],
-                    rating: 4.2,
-                    ratingCount: 15,
-                    viewCount: 80,
-                    favoriteCount: 20
-                }
-            ];
-        }
-
-        function loadNotifications() {
-            const saved = localStorage.getItem('notifications_' + window.shaplatState.currentUser.id);
-            window.shaplatState.notifications = saved ? JSON.parse(saved) : [];
-        }
-
-        function addNotification(text, type = 'info') {
-            const notification = {
-                id: Date.now(),
-                text,
-                type,
-                time: new Date().toLocaleString('tr-TR'),
-                read: false
-            };
-            window.shaplatState.notifications.unshift(notification);
-            localStorage.setItem('notifications_' + window.shaplatState.currentUser.id, 
-                JSON.stringify(window.shaplatState.notifications));
-        }
-
-        function renderNotifications() {
-            const container = document.getElementById('notifications-list');
-            if (!container) return;
-
-            if (window.shaplatState.notifications.length === 0) {
-                container.innerHTML = '<div class="empty-state"><h3>Henüz bildirim yok</h3></div>';
-                return;
-            }
-
-            container.innerHTML = window.shaplatState.notifications.map(notif => `
-                <div class="notification-item ${!notif.read ? 'unread' : ''}" onclick="markAsRead(${notif.id})">
-                    <div class="notification-icon">
-                        ${notif.type === 'reply' ? '💬' : notif.type === 'favorite' ? '❤️' : '📢'}
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-text">${notif.text}</div>
-                        <div class="notification-time">${notif.time}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.markAsRead = function(id) {
-            const notif = window.shaplatState.notifications.find(n => n.id === id);
-            if (notif && !notif.read) {
-                notif.read = true;
-                localStorage.setItem('notifications_' + window.shaplatState.currentUser.id, 
-                    JSON.stringify(window.shaplatState.notifications));
-                renderNotifications();
-                
-                const badge = document.querySelector('.notification-badge');
-                const unreadCount = window.shaplatState.notifications.filter(n => !n.read).length;
-                if (badge) {
-                    if (unreadCount > 0) {
-                        badge.textContent = unreadCount;
-                    } else {
-                        badge.remove();
-                    }
-                }
-            }
-        };
-
-        window.showSection = function(section) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(section).classList.add('active');
-            event.target.classList.add('active');
-
-            if (window.innerWidth <= 768) {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.remove('mobile-active');
-            }
-
-            if (section === 'trends') renderTrends();
-            else if (section === 'favorites') renderFavorites();
-            else if (section === 'notifications') renderNotifications();
-        };
-
-        window.selectCategory = function(category) {
-            window.shaplatState.selectedCategory = category;
-            
-            document.querySelectorAll('.category-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        };
-
-        window.toggleTagFilter = function(tag) {
-            const index = window.shaplatState.selectedTags.indexOf(tag);
-            if (index > -1) {
-                window.shaplatState.selectedTags.splice(index, 1);
-            } else {
-                window.shaplatState.selectedTags.push(tag);
-            }
-            
-            event.target.classList.toggle('selected');
-            
-            updateActiveFilters();
-        };
-
-        window.removeTagFilter = function(tag) {
-            window.shaplatState.selectedTags = window.shaplatState.selectedTags.filter(t => t !== tag);
-            
-            const tags = document.querySelectorAll('.tag');
-            tags.forEach(t => {
-                if (t.textContent.includes(tag)) {
-                    t.classList.remove('selected');
-                }
-            });
-            
-            updateActiveFilters();
-        };
-
-        function updateActiveFilters() {
-            const filtersContainer = document.querySelector('.active-filters');
-            if (window.shaplatState.selectedTags.length > 0) {
-                if (!filtersContainer) {
-                    const sidebarSections = document.querySelector('.sidebar-section:last-of-type');
-                    const filterHTML = `
-                        <div class="active-filters">
-                            <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                            ${window.shaplatState.selectedTags.map(tag => `
-                                <span class="filter-tag">
-                                    #${tag}
-                                    <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
-                                </span>
-                            `).join('')}
-                        </div>
-                    `;
-                    sidebarSections.insertAdjacentHTML('afterend', filterHTML);
-                } else {
-                    const tagsHTML = window.shaplatState.selectedTags.map(tag => `
-                        <span class="filter-tag">
-                            #${tag}
-                            <span class="filter-remove" onclick="removeTagFilter('${tag}')">×</span>
+                      </div>
+                    )}
+                    {city.initialPrice && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm">Değişim</span>
+                        <span className={city.price > city.initialPrice ? 'text-green-400' : 'text-red-400'}>
+                          {((city.price - city.initialPrice) / city.initialPrice * 100).toFixed(2)}%
                         </span>
-                    `).join('');
-                    filtersContainer.innerHTML = `
-                        <div style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted);">Aktif Etiketler</div>
-                        ${tagsHTML}
-                    `;
-                }
-            } else if (filtersContainer) {
-                filtersContainer.remove();
-            }
-        }
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
 
-        window.shaplatRandom = async function() {
-            const contentCard = document.querySelector('.content-card');
+      {/* Şehir Detay Pop-up */}
+      {selectedCity && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setSelectedCity(null)}>
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 max-w-md w-full border border-gray-700" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-2xl font-bold text-white">{selectedCity.name}</h3>
+                <p className="text-gray-400">{selectedCity.country}</p>
+              </div>
+              <button onClick={() => setSelectedCity(null)} className="text-gray-400 hover:text-white">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
             
-            if (contentCard) {
-                contentCard.classList.add('fade-out');
-                await new Promise(resolve => setTimeout(resolve, 300));
-            }
+            {selectedCity.flag && (
+              <img src={selectedCity.flag} alt="flag" className="w-full h-32 object-cover rounded-lg mb-4" />
+            )}
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Fiyat</span>
+                <span className="text-green-400 font-bold text-xl">{selectedCity.price.toFixed(2)} USDT</span>
+              </div>
+              {selectedCity.owner && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Sahibi</span>
+                  <span className="text-purple-400">{users[selectedCity.owner]?.name}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">İlk Fiyat</span>
+                <span className="text-gray-300">{selectedCity.initialPrice.toFixed(2)} USDT</span>
+              </div>
+            </div>
 
-            let filtered = [...window.shaplatState.contents];
+            {selectedCity.owner === currentUser?.id ? (
+              <div className="space-y-3">
+                <input
+                  type="number"
+                  placeholder="Satış Fiyatı (USDT)"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+                  id={`sell-price-${selectedCity.id}`}
+                />
+                <button
+                  onClick={() => {
+                    const price = document.getElementById(`sell-price-${selectedCity.id}`).value;
+                    if (price) {
+                      listCityForSale(selectedCity.id, price);
+                      setSelectedCity(null);
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-red-600 transition"
+                >
+                  Satışa Çıkar
+                </button>
+              </div>
+            ) : selectedCity.owner ? (
+              <div className="text-center text-gray-400">
+                Bu şehir zaten bir sahibi var. Borsadan satın alabilirsiniz.
+              </div>
+            ) : (
+              <button
+                onClick={() => buyCity(selectedCity.id)}
+                disabled={balance < selectedCity.price}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {balance < selectedCity.price ? 'Yetersiz Bakiye' : 'Satın Al'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
-            if (window.shaplatState.selectedTags.length > 0) {
-                filtered = filtered.filter(c => 
-                    window.shaplatState.selectedTags.some(tag => c.tags.includes(tag))
+  // Render - Borsa
+  const renderMarket = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+      <div className="max-w-7xl mx-auto">
+        <button onClick={() => setPage('home')} className="text-white mb-4 flex items-center gap-2 hover:text-purple-400">
+          <ChevronRight className="w-5 h-5 rotate-180" />
+          Geri
+        </button>
+        
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h2 className="text-3xl font-bold text-white mb-6">Borsa - Şehir Alım Satım</h2>
+          
+          <div className="space-y-4">
+            {marketOrders.length === 0 ? (
+              <div className="text-center text-gray-400 py-12">
+                Henüz satışta şehir bulunmuyor
+              </div>
+            ) : (
+              marketOrders.map(order => {
+                const city = cities[order.cityId];
+                const seller = users[order.sellerId];
+                return (
+                  <div key={order.id} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1">
+                        <h3 className="text-white font-bold text-lg">{city.name}</h3>
+                        <p className="text-gray-400 text-sm">{city.country}</p>
+                        <p className="text-purple-400 text-sm mt-1">Satıcı: {seller?.name}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-green-400 font-bold text-xl mb-2">{order.price.toFixed(2)} USDT</div>
+                        {order.sellerId !== currentUser?.id && (
+                          <button
+                            onClick={() => buyFromMarket(order.id)}
+                            disabled={balance < order.price}
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition disabled:opacity-50"
+                          >
+                            Satın Al
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 );
-            } else if (window.shaplatState.selectedCategory !== 'all') {
-                filtered = filtered.filter(c => c.category === window.shaplatState.selectedCategory);
-            }
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-            if (filtered.length === 0) {
-                showNotification('⚠️ Bu filtrede içerik yok!');
-                return;
-            }
+  // Render - Cüzdan
+  const renderWallet = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+      <div className="max-w-4xl mx-auto">
+        <button onClick={() => setPage('home')} className="text-white mb-4 flex items-center gap-2 hover:text-purple-400">
+          <ChevronRight className="w-5 h-5 rotate-180" />
+          Geri
+        </button>
 
-            const randomContent = filtered[Math.floor(Math.random() * filtered.length)];
-            
-            randomContent.viewCount = (randomContent.viewCount || 0) + 1;
-            window.shaplatState.currentUser.shaplatCount = (window.shaplatState.currentUser.shaplatCount || 0) + 1;
-            
-            if (isFirebaseConfigured) {
-                try {
-                    await updateDoc(doc(db, 'contents', randomContent.id), {
-                        viewCount: increment(1)
-                    });
-                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
-                        shaplatCount: increment(1)
-                    });
-                } catch (error) {
-                    console.error('Güncelleme hatası:', error);
-                }
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
-                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-            }
-            
-            // History'ye ekle
-            if (window.shaplatState.historyIndex < window.shaplatState.contentHistory.length - 1) {
-                window.shaplatState.contentHistory = window.shaplatState.contentHistory.slice(0, window.shaplatState.historyIndex + 1);
-            }
-            window.shaplatState.contentHistory.push(randomContent.id);
-            window.shaplatState.historyIndex = window.shaplatState.contentHistory.length - 1;
-            
-            displayContent(randomContent);
-            
-            updateProfileStats();
-        };
+        <div className="grid md:grid-cols-2 gap-6 mb-6">
+          {/* Para Yatırma */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Plus className="w-6 h-6 text-green-400" />
+              Para Yatır
+            </h3>
+            <div className="space-y-4">
+              <input
+                type="number"
+                placeholder="Miktar (USDT)"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+              />
+              <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3">
+                <p className="text-yellow-300 text-sm">Demo: Herhangi bir miktar yazıp yatırabilirsiniz</p>
+              </div>
+              <button
+                onClick={deposit}
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-600 transition"
+              >
+                Yatır
+              </button>
+            </div>
+          </div>
 
-        window.goToPreviousContent = async function() {
-            if (window.shaplatState.historyIndex > 0) {
-                window.shaplatState.historyIndex--;
-                const contentId = window.shaplatState.contentHistory[window.shaplatState.historyIndex];
-                const content = window.shaplatState.contents.find(c => c.id === contentId);
-                
-                if (content) {
-                    const contentCard = document.querySelector('.content-card');
-                    if (contentCard) {
-                        contentCard.classList.add('fade-out');
-                        await new Promise(resolve => setTimeout(resolve, 300));
-                    }
-                    displayContent(content);
-                }
-            } else {
-                showNotification('⚠️ Önceki içerik yok!');
-            }
-        };
+          {/* Para Çekme */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Minus className="w-6 h-6 text-red-400" />
+              Para Çek
+            </h3>
+            <div className="space-y-4">
+              <input
+                type="number"
+                placeholder="Miktar (USDT)"
+                value={withdrawalRequest.amount}
+                onChange={(e) => setWithdrawalRequest({ ...withdrawalRequest, amount: e.target.value })}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+              />
+              <input
+                type="text"
+                placeholder="Cüzdan Adresi"
+                value={withdrawalRequest.wallet}
+                onChange={(e) => setWithdrawalRequest({ ...withdrawalRequest, wallet: e.target.value })}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+              />
+              <button
+                onClick={requestWithdrawal}
+                disabled={!withdrawalRequest.amount || !withdrawalRequest.wallet || parseFloat(withdrawalRequest.amount) > balance}
+                className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-pink-600 transition disabled:opacity-50"
+              >
+                Çekim Talebi Oluştur
+              </button>
+            </div>
+          </div>
+        </div>
 
-        function updateProfileStats() {
-            const shaplatStat = document.querySelector('.profile-stat-value');
-            if (shaplatStat) {
-                shaplatStat.textContent = window.shaplatState.currentUser.shaplatCount || 0;
-            }
-        }
-
-        function displayContent(content) {
-            window.shaplatState.currentContent = content;
-            const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-            const userRating = userRatings[`${window.shaplatState.currentUser.id}_${content.id}`] || 0;
-            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
-            const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === content.id);
-
-            const canGoBack = window.shaplatState.historyIndex > 0;
-
-            const contentHTML = `
-                <div class="content-card fade-in">
-                    <img src="${content.image}" alt="${content.title}" class="content-image"
-                         onerror="this.src='https://via.placeholder.com/650x220?text=${encodeURIComponent(content.title)}'">
-                    <div class="content-body">
-                        <div class="content-meta">
-                            <span class="content-category">${content.category}</span>
-                            <div class="content-stats">
-                                <div class="stat">
-                                    <span>👁️</span>
-                                    <span>${content.viewCount || 0}</span>
-                                </div>
-                                <div class="stat">
-                                    <span>❤️</span>
-                                    <span>${content.favoriteCount || 0}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <h2 class="content-title">${content.title}</h2>
-                        <p class="content-description">${content.description}</p>
-
-                        <div class="content-url">
-                            <span>🔗</span>
-                            <span>${content.url}</span>
-                        </div>
-
-                        <div class="tags-row">
-                            ${content.tags.map(tag => `
-                                <span class="tag ${window.shaplatState.selectedTags.includes(tag) ? 'selected' : ''}" 
-                                      onclick="toggleTagFilter('${tag}')">#${tag}</span>
-                            `).join('')}
-                        </div>
-
-                        <div class="rating-box">
-                            <div class="rating-header">
-                                <div class="rating-score">
-                                    <div class="rating-number">${(content.rating || 0).toFixed(1)}</div>
-                                    <div class="rating-max">/ 5.0</div>
-                                </div>
-                                <div class="rating-count">
-                                    ${content.ratingCount || 0} değerlendirme
-                                </div>
-                            </div>
-                            <div class="rating-stars">
-                                ${[1, 2, 3, 4, 5].map(star => `
-                                    <span class="star ${star <= userRating ? 'active' : ''}" 
-                                          onclick="rateContent('${content.id}', ${star})">★</span>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <div class="content-actions">
-                            <button class="btn btn-primary" onclick="window.open('${content.url}', '_blank')">
-                                🚀 Ziyaret Et
-                            </button>
-                            <button class="btn ${isFavorite ? 'btn-outline' : 'btn-success'}" 
-                                    onclick="toggleFavorite('${content.id}')">
-                                ${isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle'}
-                            </button>
-                            <button class="btn btn-share" onclick="shareContent('${content.id}')">
-                                <span style="position: relative; z-index: 1;">📤 Paylaş</span>
-                            </button>
-                            ${canGoBack ? `
-                            <button class="btn btn-back" onclick="goToPreviousContent()">
-                                ⬅️ Önceki
-                            </button>
-                            ` : ''}
-                        </div>
-
-                        <div class="shaplat-button-container">
-                            <button class="btn-shaplat" onclick="shaplatRandom()">
-                                👏 SHAPLAT!
-                            </button>
-                        </div>
+        {/* İşlem Geçmişi */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h3 className="text-xl font-bold text-white mb-4">İşlem Geçmişi</h3>
+          <div className="space-y-3">
+            {transactions.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">Henüz işlem geçmişiniz yok</div>
+            ) : (
+              transactions.map(tx => (
+                <div key={tx.id} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white font-semibold">
+                        {tx.type === 'buy' ? 'Satın Alma' : tx.type === 'deposit' ? 'Yatırma' : 'Çekim Talebi'}
+                      </p>
+                      {tx.city && <p className="text-gray-400 text-sm">{tx.city}</p>}
+                      <p className="text-gray-500 text-xs">{new Date(tx.date).toLocaleString('tr-TR')}</p>
                     </div>
+                    <div className="text-right">
+                      <p className={`font-bold text-lg ${tx.type === 'buy' ? 'text-red-400' : 'text-green-400'}`}>
+                        {tx.type === 'buy' ? '-' : '+'}{tx.amount.toFixed(2)} USDT
+                      </p>
+                    </div>
+                  </div>
                 </div>
-            `;
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-            document.getElementById('random-content').innerHTML = contentHTML;
-        }
+  // Render - Profil
+  const renderProfile = () => {
+    const myCities = Object.values(cities).filter(c => c.owner === currentUser?.id);
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+        <div className="max-w-4xl mx-auto">
+          <button onClick={() => setPage('home')} className="text-white mb-4 flex items-center gap-2 hover:text-purple-400">
+            <ChevronRight className="w-5 h-5 rotate-180" />
+            Geri
+          </button>
 
-        window.rateContent = async function(contentId, rating) {
-            const userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
-            const key = `${window.shaplatState.currentUser.id}_${contentId}`;
-            const oldRating = userRatings[key] || 0;
-            userRatings[key] = rating;
-            localStorage.setItem('userRatings', JSON.stringify(userRatings));
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 mb-6">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-2">{currentUser?.name}</h2>
+                <p className="text-gray-400">{currentUser?.email}</p>
+              </div>
+              {currentUser?.flag && (
+                <img src={currentUser.flag} alt="flag" className="w-24 h-16 object-cover rounded-lg border-2 border-purple-400" />
+              )}
+            </div>
 
-            const content = window.shaplatState.contents.find(c => c.id === contentId);
-            if (oldRating === 0) {
-                content.rating = ((content.rating * content.ratingCount) + rating) / (content.ratingCount + 1);
-                content.ratingCount++;
-            } else {
-                content.rating = ((content.rating * content.ratingCount) - oldRating + rating) / content.ratingCount;
-            }
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl p-4 border border-green-500/30">
+                <p className="text-green-400 text-sm mb-1">Bakiye</p>
+                <p className="text-white text-2xl font-bold">{balance.toFixed(2)} USDT</p>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl p-4 border border-purple-500/30">
+                <p className="text-purple-400 text-sm mb-1">Sahip Olunan Şehir</p>
+                <p className="text-white text-2xl font-bold">{myCities.length}</p>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl p-4 border border-blue-500/30">
+                <p className="text-blue-400 text-sm mb-1">Toplam Değer</p>
+                <p className="text-white text-2xl font-bold">
+                  {myCities.reduce((sum, city) => sum + city.price, 0).toFixed(2)} USDT
+                </p>
+              </div>
+            </div>
 
-            if (isFirebaseConfigured) {
-                try {
-                    await updateDoc(doc(db, 'contents', contentId), {
-                        rating: content.rating,
-                        ratingCount: content.ratingCount
-                    });
-                } catch (error) {
-                    console.error('Rating güncelleme hatası:', error);
-                }
-            } else {
-                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-            }
+            <button
+              onClick={() => setFlagEditor({ ...flagEditor, show: true })}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition flex items-center justify-center gap-2"
+            >
+              <Flag className="w-5 h-5" />
+              Bayrak Oluştur / Düzenle
+            </button>
+          </div>
 
-            showNotification(`✅ ${rating} yıldız verdiniz!`);
-            
-            const stars = document.querySelectorAll('.star');
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-
-            document.querySelector('.rating-number').textContent = content.rating.toFixed(1);
-            document.querySelector('.rating-count').textContent = `${content.ratingCount} değerlendirme`;
-        };
-
-        window.toggleFavorite = async function(contentId) {
-            if (window.shaplatState.currentUser.anonymous) {
-                showNotification('⚠️ Favorilere eklemek için giriş yapın!');
-                showAuthModal('login');
-                return;
-            }
-
-            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
-            const existingIndex = userFavorites.findIndex(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
-            const content = window.shaplatState.contents.find(c => c.id === contentId);
-
-            if (existingIndex > -1) {
-                userFavorites.splice(existingIndex, 1);
-                content.favoriteCount = Math.max(0, (content.favoriteCount || 0) - 1);
-                window.shaplatState.currentUser.favoriteCount = Math.max(0, (window.shaplatState.currentUser.favoriteCount || 0) - 1);
-                showNotification('💔 Favorilerden kaldırıldı');
-            } else {
-                userFavorites.push({ userId: window.shaplatState.currentUser.id, contentId });
-                content.favoriteCount = (content.favoriteCount || 0) + 1;
-                window.shaplatState.currentUser.favoriteCount = (window.shaplatState.currentUser.favoriteCount || 0) + 1;
-                showNotification('❤️ Favorilere eklendi!');
-                addNotification(`"${content.title}" favorilerinize eklendi!`, 'favorite');
-            }
-
-            localStorage.setItem('userFavorites', JSON.stringify(userFavorites));
-            
-            if (isFirebaseConfigured) {
-                try {
-                    await updateDoc(doc(db, 'contents', contentId), {
-                        favoriteCount: content.favoriteCount
-                    });
-                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
-                        favoriteCount: window.shaplatState.currentUser.favoriteCount
-                    });
-                } catch (error) {
-                    console.error('Favori güncelleme hatası:', error);
-                }
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
-                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-            }
-
-            const favoriteBtn = event.target;
-            const isFavorite = userFavorites.some(f => f.userId === window.shaplatState.currentUser.id && f.contentId === contentId);
-            favoriteBtn.className = isFavorite ? 'btn btn-outline' : 'btn btn-success';
-            favoriteBtn.innerHTML = isFavorite ? '✓ Favorilerde' : '❤️ Favorilere Ekle';
-
-            const stats = document.querySelectorAll('.stat');
-            stats.forEach(stat => {
-                if (stat.textContent.includes('❤️')) {
-                    stat.querySelector('span:last-child').textContent = content.favoriteCount || 0;
-                }
-            });
-
-            renderFavorites();
-        };
-
-        window.shareContent = function(contentId) {
-            const content = window.shaplatState.contents.find(c => c.id === contentId);
-            if (navigator.share) {
-                navigator.share({
-                    title: content.title,
-                    text: content.description,
-                    url: content.url
-                }).catch(() => {
-                    navigator.clipboard.writeText(content.url);
-                    showNotification('📋 Link kopyalandı!');
-                });
-            } else {
-                navigator.clipboard.writeText(content.url);
-                showNotification('📋 Link kopyalandı!');
-            }
-        };
-
-        function renderTrends() {
-            const sortedContents = [...window.shaplatState.contents].sort((a, b) => {
-                const scoreA = ((a.viewCount || 0) * 0.3) + ((a.favoriteCount || 0) * 0.4) + ((a.rating || 0) * (a.ratingCount || 0) * 0.3);
-                const scoreB = ((b.viewCount || 0) * 0.3) + ((b.favoriteCount || 0) * 0.4) + ((b.rating || 0) * (b.ratingCount || 0) * 0.3);
-                return scoreB - scoreA;
-            }).slice(0, 9);
-
-            document.getElementById('trends-list').innerHTML = sortedContents.length > 0 ? sortedContents.map((content, index) => `
-                <div class="trend-card" onclick="viewContent('${content.id}')">
-                    <div class="trend-rank">${index + 1}</div>
-                    <img src="${content.image}" alt="${content.title}" class="trend-image"
-                         onerror="this.src='https://via.placeholder.com/400x160?text=${encodeURIComponent(content.title)}'">
-                    <div class="trend-body">
-                        <span class="tag" style="margin-bottom: 8px;">${content.category}</span>
-                        <h3 class="trend-title">${content.title}</h3>
-                        <div class="trend-stats">
-                            <span>⭐ ${(content.rating || 0).toFixed(1)}</span>
-                            <span>👁️ ${content.viewCount || 0}</span>
-                            <span>❤️ ${content.favoriteCount || 0}</span>
-                        </div>
+          {/* Şehirlerim */}
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+            <h3 className="text-xl font-bold text-white mb-4">Şehirlerim</h3>
+            {myCities.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">Henüz şehriniz yok</div>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-4">
+                {myCities.map(city => (
+                  <div key={city.id} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="text-white font-bold">{city.name}</h4>
+                        <p className="text-gray-400 text-sm">{city.country}</p>
+                      </div>
+                      {city.flag && (
+                        <img src={city.flag} alt="flag" className="w-12 h-8 object-cover rounded" />
+                      )}
                     </div>
+                    <div className="text-green-400 font-bold mb-2">{city.price.toFixed(2)} USDT</div>
+                    <button
+                      onClick={() => setSelectedCity(city)}
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition text-sm"
+                    >
+                      Satışa Çıkar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bayrak Editörü */}
+        {flagEditor.show && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setFlagEditor({ ...flagEditor, show: false })}>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 max-w-2xl w-full border border-gray-700" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-bold text-white">Bayrak Tasarla</h3>
+                <button onClick={() => setFlagEditor({ ...flagEditor, show: false })} className="text-gray-400 hover:text-white">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <canvas
+                ref={canvasRef}
+                width={600}
+                height={400}
+                onMouseDown={startDrawing}
+                onMouseUp={stopDrawing}
+                onMouseMove={draw}
+                onMouseLeave={stopDrawing}
+                className="w-full bg-white rounded-lg mb-4 cursor-crosshair"
+              />
+
+              <div className="flex gap-2 mb-4">
+                {['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#000000'].map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setCurrentColor(color)}
+                    className={`w-10 h-10 rounded-lg border-2 ${currentColor === color ? 'border-white' : 'border-gray-600'}`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={clearCanvas}
+                  className="flex-1 bg-gray-700 text-white py-3 rounded-xl font-semibold hover:bg-gray-600 transition"
+                >
+                  Temizle
+                </button>
+                <button
+                  onClick={saveFlag}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition"
+                >
+                  Kaydet
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Render - Admin Panel
+  const renderAdmin = () => (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+      <div className="max-w-6xl mx-auto">
+        <button onClick={() => setPage('home')} className="text-white mb-4 flex items-center gap-2 hover:text-purple-400">
+          <ChevronRight className="w-5 h-5 rotate-180" />
+          Geri
+        </button>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+            <Shield className="w-8 h-8 text-purple-400" />
+            Admin Paneli
+          </h2>
+
+          {/* Kullanıcılar */}
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-white mb-4">Kullanıcılar</h3>
+            <div className="space-y-3">
+              {Object.values(users).map(user => (
+                <div key={user.id} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white font-bold">{user.name}</p>
+                      <p className="text-gray-400 text-sm">{user.email}</p>
+                      <p className="text-green-400 text-sm">Bakiye: {user.balance.toFixed(2)} USDT</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => adminAddBalance(user.id, 1000)}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition text-sm"
+                      >
+                        +1000 USDT
+                      </button>
+                    </div>
+                  </div>
                 </div>
-            `).join('') : '<div class="empty-state"><h3>Henüz trend içerik yok</h3></div>';
-        }
+              ))}
+            </div>
+          </div>
 
-        window.renderFavorites = function() {
-            if (window.shaplatState.currentUser.anonymous) {
-                document.getElementById('favorites-list').innerHTML = `
-                    <div class="empty-state">
-                        <h3>Favorileri görmek için giriş yapın</h3>
-                        <button class="btn btn-primary" onclick="showAuthModal('login')" style="margin-top: 20px;">
-                            🔐 Giriş Yap
-                        </button>
+          {/* İşlemler */}
+          <div>
+            <h3 className="text-xl font-bold text-white mb-4">Tüm İşlemler</h3>
+            <div className="space-y-3">
+              {transactions.map(tx => (
+                <div key={tx.id} className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-4 border border-gray-700">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white font-semibold">
+                        {tx.type === 'buy' ? 'Satın Alma' : tx.type === 'deposit' ? 'Yatırma' : 'Çekim Talebi'}
+                      </p>
+                      {tx.city && <p className="text-gray-400 text-sm">{tx.city}</p>}
+                      {tx.wallet && <p className="text-gray-400 text-sm">Cüzdan: {tx.wallet}</p>}
+                      <p className="text-gray-500 text-xs">{new Date(tx.date).toLocaleString('tr-TR')}</p>
                     </div>
-                `;
-                return;
-            }
-
-            const userFavorites = JSON.parse(localStorage.getItem('userFavorites') || '[]');
-            let favoriteContents = userFavorites
-                .filter(f => f.userId === window.shaplatState.currentUser.id)
-                .map(f => window.shaplatState.contents.find(c => c.id === f.contentId))
-                .filter(c => c);
-
-            const sortBy = document.getElementById('favorites-sort') ? document.getElementById('favorites-sort').value : 'rating';
-
-            if (sortBy === 'rating') {
-                favoriteContents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-            } else if (sortBy === 'favorites') {
-                favoriteContents.sort((a, b) => (b.favoriteCount || 0) - (a.favoriteCount || 0));
-            } else if (sortBy === 'views') {
-                favoriteContents.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
-            }
-
-            document.getElementById('favorites-list').innerHTML = favoriteContents.length > 0 ? favoriteContents.map(content => `
-                <div class="trend-card" onclick="viewContent('${content.id}')">
-                    <img src="${content.image}" alt="${content.title}" class="trend-image"
-                         onerror="this.src='https://via.placeholder.com/400x160?text=${encodeURIComponent(content.title)}'">
-                    <div class="trend-body">
-                        <span class="tag" style="margin-bottom: 8px;">${content.category}</span>
-                        <h3 class="trend-title">${content.title}</h3>
-                        <div class="trend-stats">
-                            <span>⭐ ${(content.rating || 0).toFixed(1)}</span>
-                            <span>👁️ ${content.viewCount || 0}</span>
-                            <span>❤️ ${content.favoriteCount || 0}</span>
-                        </div>
+                    <div className="text-right">
+                      <p className={`font-bold ${tx.type === 'buy' ? 'text-red-400' : 'text-green-400'}`}>
+                        {tx.amount.toFixed(2)} USDT
+                      </p>
+                      {tx.status && (
+                        <span className="text-yellow-400 text-sm">{tx.status}</span>
+                      )}
                     </div>
+                  </div>
                 </div>
-            `).join('') : '<div class="empty-state"><h3>Henüz favori eklemediniz</h3></div>';
-        };
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-        window.viewContent = async function(contentId) {
-            const content = window.shaplatState.contents.find(c => c.id === contentId);
-            if (!content) return;
-            
-            content.viewCount = (content.viewCount || 0) + 1;
-            
-            if (isFirebaseConfigured) {
-                try {
-                    await updateDoc(doc(db, 'contents', content.id), {
-                        viewCount: increment(1)
-                    });
-                } catch (error) {
-                    console.error('View count güncelleme hatası:', error);
-                }
-            } else {
-                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-            }
-            
-            showSection('random');
-            
-            const contentCard = document.querySelector('.content-card');
-            if (contentCard) {
-                contentCard.classList.add('fade-out');
-                await new Promise(resolve => setTimeout(resolve, 300));
-            }
-            
-            // History'ye ekle
-            if (window.shaplatState.historyIndex < window.shaplatState.contentHistory.length - 1) {
-                window.shaplatState.contentHistory = window.shaplatState.contentHistory.slice(0, window.shaplatState.historyIndex + 1);
-            }
-            window.shaplatState.contentHistory.push(content.id);
-            window.shaplatState.historyIndex = window.shaplatState.contentHistory.length - 1;
-            
-            displayContent(content);
-        };
+  // Ana Render
+  if (!currentUser) return renderLogin();
 
-        window.updateProfile = async function() {
-            const name = document.getElementById('profile-name').value.trim();
+  return (
+    <>
+      {page === 'home' && renderHome()}
+      {page === 'market' && renderMarket()}
+      {page === 'wallet' && renderWallet()}
+      {page === 'profile' && renderProfile()}
+      {page === 'admin' && currentUser.isAdmin && renderAdmin()}
+      
+      {selectedCity && page === 'home' && null}
+    </>
+  );
+};
 
-            if (!name) {
-                showNotification('⚠️ İsim boş olamaz!');
-                return;
-            }
-
-            window.shaplatState.currentUser.name = name;
-
-            if (isFirebaseConfigured) {
-                try {
-                    await updateDoc(doc(db, 'users', window.shaplatState.currentUser.id), {
-                        name: name
-                    });
-                } catch (error) {
-                    console.error('Profil güncelleme hatası:', error);
-                }
-            } else {
-                sessionStorage.setItem('currentUser', JSON.stringify(window.shaplatState.currentUser));
-            }
-
-            showNotification('✅ Profil güncellendi!');
-            
-            document.querySelector('.profile-name').textContent = name;
-            document.querySelector('.user-card div div:first-child').textContent = name;
-            document.querySelector('.user-avatar').textContent = name[0].toUpperCase();
-            document.querySelector('.profile-avatar-large').textContent = name[0].toUpperCase();
-        };
-
-        window.sendContact = function() {
-            const name = document.getElementById('contact-name').value;
-            const email = document.getElementById('contact-email').value;
-            const message = document.getElementById('contact-message').value;
-
-            if (!name || !email || !message) {
-                showNotification('⚠️ Tüm alanları doldurun!');
-                return;
-            }
-
-            showNotification('✅ Mesajınız alındı! Teşekkürler.');
-            document.getElementById('contact-name').value = '';
-            document.getElementById('contact-email').value = '';
-            document.getElementById('contact-message').value = '';
-        };
-
-        window.toggleMobileMenu = function() {
-            document.getElementById('sidebar').classList.toggle('mobile-active');
-        };
-
-        function updateAdminStats() {
-            if (window.shaplatState.currentUser.role !== 'admin') return;
-            
-            const totalViews = window.shaplatState.contents.reduce((sum, c) => sum + (c.viewCount || 0), 0);
-            const totalFavorites = window.shaplatState.contents.reduce((sum, c) => sum + (c.favoriteCount || 0), 0);
-            
-            const statsContainer = document.getElementById('admin-stats');
-            if (statsContainer) {
-                statsContainer.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-value">${window.shaplatState.contents.length}</div>
-                        <div class="stat-label">İçerik</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${totalViews}</div>
-                        <div class="stat-label">Görüntüleme</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${totalFavorites}</div>
-                        <div class="stat-label">Favori</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${window.shaplatState.categories.length}</div>
-                        <div class="stat-label">Kategori</div>
-                    </div>
-                `;
-            }
-        }
-
-        window.filterAdminContents = function() {
-            window.shaplatState.searchQuery = document.getElementById('admin-search').value.toLowerCase();
-            renderAdminContents();
-        };
-
-        window.showAdminTab = function(tab) {
-            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (tab === 'contents') renderAdminContents();
-            else if (tab === 'bulk') renderBulkAdd();
-            else if (tab === 'add') renderAddContent();
-            else if (tab === 'firebase') renderFirebaseConfig();
-            else if (tab === 'categories') renderAdminCategories();
-        };
-
-        function renderAdminContents() {
-            let filteredContents = [...window.shaplatState.contents];
-            
-            if (window.shaplatState.searchQuery) {
-                filteredContents = filteredContents.filter(c => 
-                    c.title.toLowerCase().includes(window.shaplatState.searchQuery) ||
-                    c.url.toLowerCase().includes(window.shaplatState.searchQuery)
-                );
-            }
-
-            document.getElementById('admin-content').innerHTML = `
-                <div class="admin-section">
-                    <h3 style="margin-bottom: 18px; font-size: 1.4rem; font-weight: 800;">📋 İçerik Listesi</h3>
-                    ${filteredContents.length === 0 ? '<div class="empty-state"><h3>Sonuç bulunamadı</h3></div>' : `
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Başlık</th>
-                                <th>Kategori</th>
-                                <th>Görüntüleme</th>
-                                <th>Puan</th>
-                                <th>Favori</th>
-                                <th>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${filteredContents.map(content => `
-                                <tr>
-                                    <td style="font-weight: 700;">${content.title}</td>
-                                    <td>${content.category}</td>
-                                    <td>👁️ ${content.viewCount || 0}</td>
-                                    <td>⭐ ${(content.rating || 0).toFixed(1)}</td>
-                                    <td>❤️ ${content.favoriteCount || 0}</td>
-                                    <td>
-                                        <button class="btn-small btn-edit" onclick="editContent('${content.id}')">Düzenle</button>
-                                        <button class="btn-small btn-delete" onclick="deleteContent('${content.id}')">Sil</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    `}
-                </div>
-            `;
-        }
-
-        function renderBulkAdd() {
-            document.getElementById('admin-content').innerHTML = `
-                <div class="admin-section">
-                    <h3 style="margin-bottom: 18px; font-size: 1.4rem; font-weight: 800;">⚡ Toplu İçerik Ekleme</h3>
-                    
-                    <div class="format-info">
-                        <strong>📝 Format:</strong>
-                        Her satıra bir içerik yazın. Alanları | (pipe) işareti ile ayırın:
-                        <div class="format-example">Başlık|Açıklama|https://url.com|https://image-url.com|Kategori|etiket1,etiket2,etiket3</div>
-                        <div style="margin-top: 10px; color: var(--text-muted); font-size: 0.8rem;">
-                            💡 <strong>Önemli:</strong> Etiketleri virgül ile ayırın. Kategori var olan kategorilerden biri olmalı. <strong>Aynı URL'den sadece bir içerik eklenebilir.</strong>
-                        </div>
-                    </div>
-
-                    <div class="bulk-import-area">
-                        <textarea id="bulk-input" class="bulk-textarea" placeholder="Poolside FM|Nostaljik yaz hissi veren chill müzik radyosu.|https://poolside.fm|https://example.com/image.jpg|Müzik|müzik,rahatlatıcı,radyo
-Noisli|Ortam sesleri ile odaklanmanızı artırın.|https://noisli.com|https://example.com/noisli.jpg|Araçlar & Uygulamalar|ses,odaklanma,rahatlatıcı
-..."></textarea>
-                    </div>
-
-                    <div style="margin-top: 15px; display: flex; gap: 10px;">
-                        <button class="btn btn-primary" onclick="processBulkAdd()">
-                            ⚡ Toplu Ekle
-                        </button>
-                        <button class="btn btn-outline" onclick="document.getElementById('bulk-input').value = ''">
-                            🗑️ Temizle
-                        </button>
-                    </div>
-
-                    <div id="bulk-result" style="margin-top: 20px;"></div>
-                </div>
-            `;
-        }
-
-        window.processBulkAdd = async function() {
-            const bulkText = document.getElementById('bulk-input').value.trim();
-            
-            if (!bulkText) {
-                showNotification('⚠️ İçerik girişi boş!');
-                return;
-            }
-
-            const lines = bulkText.split('\n').filter(line => line.trim());
-            let successCount = 0;
-            let errorCount = 0;
-            const errors = [];
-
-            const existingUrls = window.shaplatState.contents.map(c => c.url.toLowerCase());
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                const parts = line.split('|').map(p => p.trim());
-
-                if (parts.length !== 6) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: Yanlış format (6 alan olmalı)`);
-                    continue;
-                }
-
-                const [title, description, url, image, category, tagsStr] = parts;
-                
-                if (!title || !description || !url || !image || !category || !tagsStr) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: Boş alan var`);
-                    continue;
-                }
-
-                if (existingUrls.includes(url.toLowerCase())) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: Bu URL zaten kayıtlı: ${url}`);
-                    continue;
-                }
-
-                if (!window.shaplatState.categories.includes(category)) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: Geçersiz kategori "${category}"`);
-                    continue;
-                }
-
-                const tags = tagsStr.split(',').map(t => t.trim().toLowerCase()).filter(t => t);
-
-                if (tags.length === 0) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: En az 1 etiket gerekli`);
-                    continue;
-                }
-
-                const contentData = {
-                    title,
-                    description,
-                    url,
-                    image,
-                    category,
-                    tags,
-                    rating: 0,
-                    ratingCount: 0,
-                    viewCount: 0,
-                    favoriteCount: 0
-                };
-
-                try {
-                    if (isFirebaseConfigured) {
-                        const docRef = await addDoc(collection(db, 'contents'), contentData);
-                        contentData.id = docRef.id;
-                    } else {
-                        contentData.id = Date.now().toString() + '_' + i;
-                    }
-                    
-                    window.shaplatState.contents.push(contentData);
-                    existingUrls.push(url.toLowerCase());
-                    successCount++;
-                } catch (error) {
-                    errorCount++;
-                    errors.push(`Satır ${i + 1}: Veritabanı hatası`);
-                }
-            }
-
-            if (!isFirebaseConfigured) {
-                localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-            }
-
-            let resultHTML = `
-                <div class="admin-section">
-                    <h4 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 15px;">📊 Sonuç</h4>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
-                        <div class="stat-card">
-                            <div class="stat-value" style="color: var(--success);">${successCount}</div>
-                            <div class="stat-label">Başarılı</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" style="color: var(--danger);">${errorCount}</div>
-                            <div class="stat-label">Hatalı</div>
-                        </div>
-                    </div>
-            `;
-
-            if (errors.length > 0) {
-                resultHTML += `
-                    <div style="background: var(--darker); padding: 15px; border-radius: 10px; border-left: 3px solid var(--danger);">
-                        <strong style="color: var(--danger); display: block; margin-bottom: 10px;">❌ Hatalar:</strong>
-                        <ul style="color: var(--text-muted); font-size: 0.85rem; list-style-position: inside;">
-                            ${errors.map(err => `<li style="margin-bottom: 5px;">${err}</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-
-            resultHTML += '</div>';
-            document.getElementById('bulk-result').innerHTML = resultHTML;
-
-            updateAdminStats();
-            
-            if (successCount > 0) {
-                showNotification(`✅ ${successCount} içerik eklendi!`);
-            }
-        };
-
-        function renderAddContent() {
-            const content = window.shaplatState.editingContentId ? 
-                window.shaplatState.contents.find(c => c.id === window.shaplatState.editingContentId) : null;
-            
-            document.getElementById('admin-content').innerHTML = `
-                <div class="admin-section">
-                    <h3 style="margin-bottom: 20px; font-size: 1.4rem; font-weight: 800;">
-                        ${window.shaplatState.editingContentId ? '✏️ İçerik Düzenle' : '➕ Yeni İçerik Ekle'}
-                    </h3>
-                    <div class="form-group">
-                        <label class="form-label">Başlık</label>
-                        <input type="text" id="content-title" class="form-input" 
-                               value="${content ? content.title : ''}" placeholder="İçerik başlığı">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Açıklama</label>
-                        <textarea id="content-description" class="form-input" placeholder="İçerik açıklaması">${content ? content.description : ''}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">URL</label>
-                        <input type="text" id="content-url" class="form-input" 
-                               value="${content ? content.url : ''}" placeholder="https://...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Görsel URL</label>
-                        <input type="text" id="content-image" class="form-input" 
-                               value="${content ? content.image : ''}" placeholder="https://...">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Kategori</label>
-                        <select id="content-category" class="form-input">
-                            ${window.shaplatState.categories.map(cat => `
-                                <option value="${cat}" ${content && content.category === cat ? 'selected' : ''}>${cat}</option>
-                            `).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Etiketler (Enter ile ekleyin)</label>
-                        <div class="tags-input-box" id="tags-input" onclick="document.getElementById('tag-field').focus()">
-                            <input type="text" id="tag-field" class="tags-input-field" 
-                                   placeholder="Etiket ekle..." onkeydown="handleTagInput(event)">
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-primary" onclick="saveContent()">
-                            ${window.shaplatState.editingContentId ? '💾 Güncelle' : '➕ Ekle'}
-                        </button>
-                        ${window.shaplatState.editingContentId ? '<button class="btn btn-outline" onclick="cancelEdit()">❌ İptal</button>' : ''}
-                    </div>
-                </div>
-            `;
-
-            if (content) {
-                window.shaplatState.currentTags = [...content.tags];
-                updateTagsDisplay();
-            } else {
-                window.shaplatState.currentTags = [];
-            }
-        }
-
-        function renderFirebaseConfig() {
-            document.getElementById('admin-content').innerHTML = `
-                <div class="admin-section">
-                    <h3 style="margin-bottom: 18px; font-size: 1.4rem; font-weight: 800;">🔥 Firebase Yapılandırması</h3>
-                    <p style="color: var(--text-muted); margin-bottom: 18px; font-weight: 600;">
-                        Firebase proje ayarlarınızı HTML dosyasındaki firebaseConfig nesnesine girin ve sayfayı yenileyin.
-                    </p>
-                    <div class="format-info">
-                        <strong>Yapılandırma Durumu:</strong>
-                        <p style="margin-top: 10px;">
-                            ${isFirebaseConfigured ? 
-                                '✅ Firebase etkinleştirilmiş ve çalışıyor!' : 
-                                '❌ Firebase yapılandırılmamış. Local mod aktif.'}
-                        </p>
-                    </div>
-                    <div class="firebase-warning" style="margin-top: 15px;">
-                        <strong>⚠️ Google Giriş Hatası Çözümü:</strong><br>
-                        Eğer "auth/unauthorized-domain" hatası alıyorsanız:<br>
-                        1. Firebase Console'a gidin<br>
-                        2. Authentication > Settings > Authorized domains<br>
-                        3. Bu domain'i ekleyin: ${window.location.hostname}<br>
-                        4. Sayfayı yenileyin
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAdminCategories() {
-            document.getElementById('admin-content').innerHTML = `
-                <div class="admin-section">
-                    <h3 style="margin-bottom: 20px; font-size: 1.4rem; font-weight: 800;">📁 Kategori Yönetimi</h3>
-                    <div class="form-group">
-                        <label class="form-label">Yeni Kategori</label>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="new-category" class="form-input" placeholder="Kategori adı">
-                            <button class="btn btn-primary" onclick="addCategory()">Ekle</button>
-                        </div>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Kategori</th>
-                                <th>İçerik Sayısı</th>
-                                <th>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${window.shaplatState.categories.map(cat => `
-                                <tr>
-                                    <td style="font-weight: 700;">${cat}</td>
-                                    <td>${window.shaplatState.contents.filter(c => c.category === cat).length}</td>
-                                    <td>
-                                        <button class="btn-small btn-delete" onclick="deleteCategory('${cat}')">Sil</button>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        window.handleTagInput = function(e) {
-            if (e.key === 'Enter' && e.target.value.trim()) {
-                e.preventDefault();
-                const tag = e.target.value.trim().toLowerCase();
-                if (!window.shaplatState.currentTags.includes(tag)) {
-                    window.shaplatState.currentTags.push(tag);
-                    updateTagsDisplay();
-                }
-                e.target.value = '';
-            }
-        };
-
-        function updateTagsDisplay() {
-            const container = document.getElementById('tags-input');
-            const input = document.getElementById('tag-field');
-            
-            container.innerHTML = window.shaplatState.currentTags.map(tag => `
-                <span class="tag-input-item">
-                    #${tag}
-                    <span class="tag-remove" onclick="removeTag('${tag}')">×</span>
-                </span>
-            `).join('');
-            
-            container.appendChild(input);
-        }
-
-        window.removeTag = function(tag) {
-            window.shaplatState.currentTags = window.shaplatState.currentTags.filter(t => t !== tag);
-            updateTagsDisplay();
-        };
-
-        window.saveContent = async function() {
-            const title = document.getElementById('content-title').value.trim();
-            const description = document.getElementById('content-description').value.trim();
-            const url = document.getElementById('content-url').value.trim();
-            const image = document.getElementById('content-image').value.trim();
-            const category = document.getElementById('content-category').value;
-
-            if (!title || !description || !url || !image || window.shaplatState.currentTags.length === 0) {
-                showNotification('⚠️ Tüm alanları doldurun ve en az 1 etiket ekleyin!');
-                return;
-            }
-
-            const existingContent = window.shaplatState.contents.find(c => 
-                c.url.toLowerCase() === url.toLowerCase() && 
-                c.id !== window.shaplatState.editingContentId
-            );
-
-            if (existingContent) {
-                showNotification('⚠️ Bu URLzaten kayıtlı!');
-                return;
-            }
-
-            const contentData = {
-                title,
-                description,
-                url,
-                image,
-                category,
-                tags: [...window.shaplatState.currentTags],
-                rating: 0,
-                ratingCount: 0,
-                viewCount: 0,
-                favoriteCount: 0
-            };
-
-            if (window.shaplatState.editingContentId) {
-                const content = window.shaplatState.contents.find(c => c.id === window.shaplatState.editingContentId);
-                
-                contentData.rating = content.rating;
-                contentData.ratingCount = content.ratingCount;
-                contentData.viewCount = content.viewCount;
-                contentData.favoriteCount = content.favoriteCount;
-                
-                Object.assign(content, contentData);
-                
-                if (isFirebaseConfigured) {
-                    try {
-                        await updateDoc(doc(db, 'contents', window.shaplatState.editingContentId), contentData);
-                    } catch (error) {
-                        console.error('Güncelleme hatası:', error);
-                    }
-                } else {
-                    localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-                }
-                
-                showNotification('✅ İçerik güncellendi!');
-                window.shaplatState.editingContentId = null;
-            } else {
-                if (isFirebaseConfigured) {
-                    try {
-                        const docRef = await addDoc(collection(db, 'contents'), contentData);
-                        contentData.id = docRef.id;
-                    } catch (error) {
-                        console.error('Ekleme hatası:', error);
-                        contentData.id = Date.now().toString();
-                    }
-                } else {
-                    contentData.id = Date.now().toString();
-                }
-                
-                window.shaplatState.contents.push(contentData);
-                
-                if (!isFirebaseConfigured) {
-                    localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-                }
-                
-                showNotification('✅ İçerik eklendi!');
-            }
-
-            window.shaplatState.currentTags = [];
-            updateAdminStats();
-            showAdminTab('contents');
-        };
-
-        window.editContent = function(id) {
-            window.shaplatState.editingContentId = id;
-            showAdminTab('add');
-        };
-
-        window.cancelEdit = function() {
-            window.shaplatState.editingContentId = null;
-            window.shaplatState.currentTags = [];
-            showAdminTab('contents');
-        };
-
-        window.deleteContent = async function(id) {
-            if (confirm('Bu içeriği silmek istediğinize emin misiniz?')) {
-                window.shaplatState.contents = window.shaplatState.contents.filter(c => c.id !== id);
-                
-                if (isFirebaseConfigured) {
-                    try {
-                        await deleteDoc(doc(db, 'contents', id));
-                    } catch (error) {
-                        console.error('Silme hatası:', error);
-                    }
-                } else {
-                    localStorage.setItem('shaplatContents', JSON.stringify(window.shaplatState.contents));
-                }
-                
-                updateAdminStats();
-                renderAdminContents();
-                showNotification('🗑️ İçerik silindi');
-            }
-        };
-
-        window.addCategory = function() {
-            const name = document.getElementById('new-category').value.trim();
-            if (!name) {
-                showNotification('⚠️ Kategori adı boş olamaz!');
-                return;
-            }
-            if (window.shaplatState.categories.includes(name)) {
-                showNotification('⚠️ Bu kategori zaten var!');
-                return;
-            }
-            window.shaplatState.categories.push(name);
-            renderAdminCategories();
-            showNotification('✅ Kategori eklendi!');
-        };
-
-        window.deleteCategory = function(name) {
-            if (window.shaplatState.contents.some(c => c.category === name)) {
-                showNotification('⚠️ Bu kategoride içerikler var!');
-                return;
-            }
-            if (confirm(`"${name}" kategorisini silmek istediğinize emin misiniz?`)) {
-                window.shaplatState.categories = window.shaplatState.categories.filter(c => c !== name);
-                renderAdminCategories();
-                showNotification('🗑️ Kategori silindi');
-            }
-        };
-
-        window.showAuthModal = showAuthModal;
-
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-    </script>
-</body>
-</html>
+export default CityMarketplace;
