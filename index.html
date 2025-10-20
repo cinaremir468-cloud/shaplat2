@@ -1408,11 +1408,12 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 
+                const initials = student.name.split(' ').map(n => n[0]).join('').substring(0, 2);
                 const avatar = student.profilePhoto 
                     ? `<img src="${student.profilePhoto}" alt="${student.name}">`
-                    : student.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+                    : initials;
 
-                const faceBadge = student.faceTrained 
+                const faceBadge = (student.faceTrained || student.faceDescriptorsJSON)
                     ? '<div class="face-trained-badge"><i class="fas fa-check"></i></div>'
                     : '';
 
@@ -1535,13 +1536,14 @@
             saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
 
             try {
+                // Firestore için faceDescriptors'ı JSON string'e çevir
                 const studentData = {
                     name,
                     studentNo,
                     class: studentClass,
                     profilePhoto: facePhotos[0],
                     facePhotos: facePhotos,
-                    faceDescriptors: faceDescriptors,
+                    faceDescriptorsJSON: JSON.stringify(faceDescriptors), // String olarak kaydet
                     faceTrained: true,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     totalHours: 0,
@@ -1718,7 +1720,7 @@
                 const faceResult = await recognizeFace(video);
                 const aiAnalysis = await analyzeWithAI(canvas);
 
-                const analysis = {
+                const analysisData = {
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                     faceRecognition: faceResult,
                     aiAnalysis: aiAnalysis
@@ -1726,11 +1728,18 @@
 
                 await db.collection('users').doc(currentUser.uid)
                     .collection('sessions').doc(currentSession.id)
-                    .collection('analyses').add(analysis);
+                    .collection('analyses').add(analysisData);
 
                 console.log('✅ Analiz Firebase\'e kaydedildi');
 
-                updateLiveUI(analysis);
+                // UI güncellemesi için manuel timestamp kullan
+                const uiAnalysis = {
+                    timestamp: new Date().toISOString(),
+                    faceRecognition: faceResult,
+                    aiAnalysis: aiAnalysis
+                };
+
+                updateLiveUI(uiAnalysis);
             } catch (error) {
                 console.error('Analiz hatası:', error);
             }
@@ -1748,12 +1757,15 @@
                 }
 
                 const student = students.find(s => s.id === currentSession.studentId);
-                if (!student || !student.faceDescriptors) {
+                if (!student || !student.faceDescriptorsJSON) {
                     return { found: false, studentId: null, confidence: 0 };
                 }
 
+                // JSON string'i tekrar diziye çevir
+                const savedDescriptors = JSON.parse(student.faceDescriptorsJSON);
+
                 let bestDistance = Infinity;
-                for (const savedDescriptor of student.faceDescriptors) {
+                for (const savedDescriptor of savedDescriptors) {
                     const distance = faceapi.euclideanDistance(
                         detection.descriptor,
                         new Float32Array(savedDescriptor)
@@ -1951,7 +1963,7 @@
         function updateStats() {
             document.getElementById('totalStudents').textContent = students.length;
             document.getElementById('trainedStudents').textContent = 
-                students.filter(s => s.faceTrained).length;
+                students.filter(s => s.faceTrained || s.faceDescriptorsJSON).length;
             document.getElementById('activeSessions').textContent = 
                 sessions.filter(s => s.status === 'active').length;
         }
