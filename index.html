@@ -92,16 +92,29 @@
                 <!-- Add Camera -->
                 <div class="glass rounded-2xl shadow-lg p-6">
                     <h2 class="text-xl font-bold mb-4">Kamera Ekle</h2>
+                    
+                    <!-- Help Section -->
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded">
+                        <p class="text-sm font-semibold text-blue-900 mb-2">📱 Android IP Webcam Kullanımı:</p>
+                        <ol class="text-xs text-blue-800 space-y-1 ml-4 list-decimal">
+                            <li>Play Store'dan "IP Webcam" uygulamasını indirin</li>
+                            <li>Uygulamayı açın ve "Start Server" butonuna basın</li>
+                            <li>Ekranda görünen IP adresini kopyalayın (örn: http://192.168.1.100:8080)</li>
+                            <li>URL'nin sonuna <code class="bg-white px-1 rounded">/video</code> ekleyin → <code class="bg-white px-1 rounded">http://192.168.1.100:8080/video</code></li>
+                            <li>Telefon ve bilgisayarınız aynı WiFi'ye bağlı olmalı!</li>
+                        </ol>
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input id="cameraName" type="text" placeholder="Kamera Adı" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
-                        <input id="cameraUrl" type="text" placeholder="IP Kamera URL / Android IP Webcam" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+                        <input id="cameraName" type="text" placeholder="Kamera Adı (örn: Ön Kapı)" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
+                        <input id="cameraUrl" type="text" placeholder="http://192.168.1.100:8080/video" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
                         <select id="cameraType" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none">
-                            <option value="ip">IP Kamera</option>
                             <option value="android">Android IP Webcam</option>
+                            <option value="ip">IP Kamera</option>
                             <option value="rtsp">RTSP Stream</option>
                         </select>
                         <button onclick="addCamera()" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-lg font-semibold transition-all">
-                            Kamera Ekle
+                            📹 Kamera Ekle
                         </button>
                     </div>
                 </div>
@@ -446,21 +459,37 @@
             const streamImg = document.getElementById('cameraStream');
             const placeholder = document.getElementById('cameraPlaceholder');
             
-            streamImg.src = camera.url;
+            // Use CORS proxy for HTTP cameras to avoid Mixed Content
+            let streamUrl = camera.url;
+            if (camera.url.startsWith('http://')) {
+                streamUrl = 'https://corsproxy.io/?' + encodeURIComponent(camera.url);
+            }
+            
+            streamImg.src = streamUrl;
             streamImg.onload = () => {
                 placeholder.classList.add('hidden');
                 streamImg.classList.remove('hidden');
             };
             streamImg.onerror = () => {
-                placeholder.innerHTML = '<p class="text-white">Kamera bağlantısı kurulamadı</p>';
+                placeholder.innerHTML = `
+                    <div class="text-white text-center">
+                        <p class="mb-2">⚠️ Kamera bağlantısı kurulamadı</p>
+                        <p class="text-sm text-gray-300">Lütfen kameranızın açık ve erişilebilir olduğundan emin olun</p>
+                        <p class="text-xs text-gray-400 mt-2">URL: ${camera.url}</p>
+                    </div>
+                `;
             };
 
             // Refresh stream periodically for IP cameras
-            if (camera.type === 'android') {
-                setInterval(() => {
-                    streamImg.src = camera.url + '?t=' + new Date().getTime();
+            let refreshInterval;
+            if (camera.type === 'android' || camera.type === 'ip') {
+                refreshInterval = setInterval(() => {
+                    streamImg.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
                 }, 1000);
             }
+
+            // Cleanup on modal close
+            window.currentStreamInterval = refreshInterval;
         };
 
         window.closeCameraModal = () => {
@@ -469,6 +498,15 @@
                 clearInterval(analysisInterval);
                 analysisInterval = null;
             }
+            if (window.currentStreamInterval) {
+                clearInterval(window.currentStreamInterval);
+                window.currentStreamInterval = null;
+            }
+            // Stop camera stream
+            const streamImg = document.getElementById('cameraStream');
+            streamImg.src = '';
+            streamImg.classList.add('hidden');
+            document.getElementById('cameraPlaceholder').classList.remove('hidden');
             currentCamera = null;
         };
 
