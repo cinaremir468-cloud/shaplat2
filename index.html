@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hayat Organizatörü - Yaşamınızı Sistematize Edin</title>
+    <title>Hayat Organizatörü Pro - Yaşamınızı Sistematize Edin</title>
     <style>
         * {
             margin: 0;
@@ -20,8 +20,142 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-card h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .google-login-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-bottom: 20px;
+            justify-content: space-between;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-details {
+            flex: 1;
+            text-align: left;
+        }
+
+        .user-name {
+            color: white;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .user-email {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85em;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .header {
@@ -45,6 +179,51 @@
         .header p {
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.1em;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .stats-container {
@@ -232,6 +411,7 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             position: relative;
+            cursor: move;
         }
 
         .task-item:hover {
@@ -247,6 +427,10 @@
 
         .task-item.completed .task-title {
             text-decoration: line-through;
+        }
+
+        .task-item.dragging {
+            opacity: 0.5;
         }
 
         .task-header {
@@ -369,22 +553,6 @@
             color: white;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-            border-radius: 10px;
-        }
-
         .icon {
             width: 24px;
             height: 24px;
@@ -419,14 +587,323 @@
             font-weight: bold;
         }
 
-        @media (max-width: 768px) {
-            .weekly-view {
-                grid-template-columns: repeat(3, 1fr);
+        /* KANBAN BOARD STYLES */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .kanban-column {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            min-height: 500px;
+        }
+
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid;
+        }
+
+        .column-todo .kanban-header { border-bottom-color: #ff6b6b; }
+        .column-progress .kanban-header { border-bottom-color: #feca57; }
+        .column-done .kanban-header { border-bottom-color: #48dbfb; }
+        .column-completed .kanban-header { border-bottom-color: #1dd1a1; }
+
+        .kanban-header h3 {
+            font-size: 1.3em;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kanban-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .kanban-tasks {
+            min-height: 400px;
+            padding: 10px;
+        }
+
+        .kanban-task {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: move;
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .kanban-task:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .kanban-task.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .kanban-column.drag-over {
+            background: rgba(102, 126, 234, 0.1);
+            border: 2px dashed #667eea;
+        }
+
+        /* NOTES STYLES */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            border-left: 5px solid;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .note-card.pinned {
+            background: linear-gradient(135deg, #fff5e1 0%, #ffe4b5 100%);
+        }
+
+        .note-card.pinned::before {
+            content: "📌";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .note-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+
+        .note-date {
+            font-size: 0.8em;
+            color: #999;
+        }
+
+        .note-content {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .note-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .note-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .note-color-red { border-left-color: #ff6b6b; }
+        .note-color-blue { border-left-color: #4ecdc4; }
+        .note-color-green { border-left-color: #1dd1a1; }
+        .note-color-yellow { border-left-color: #feca57; }
+        .note-color-purple { border-left-color: #a29bfe; }
+        .note-color-orange { border-left-color: #fd79a8; }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
             }
-            
-            .form-row {
-                grid-template-columns: 1fr;
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #da190b;
+            transform: rotate(90deg);
+        }
+
+        .note-editor {
+            margin-top: 20px;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .toolbar-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .color-picker {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .color-option {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+
+        .color-option.selected {
+            border-color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
         }
 
         .priority-high { border-left-color: #f44336; }
@@ -445,167 +922,482 @@
         .priority-high-badge { background: #f44336; color: white; }
         .priority-medium-badge { background: #ff9800; color: white; }
         .priority-low-badge { background: #4caf50; color: white; }
+
+        @media (max-width: 768px) {
+            .weekly-view {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎯 Hayat Organizatörü</h1>
-            <p>Yaşamınızın her alanını sistematize edin ve hedeflerinize ulaşın</p>
-        </div>
-
-        <div class="stats-container">
-            <div class="stat-card">
-                <h3 id="totalTasks">0</h3>
-                <p>Toplam Görev</p>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <h1>🎯 Hayat Organizatörü Pro</h1>
+            <p>Görevlerinizi ve notlarınızı bulutta saklayın</p>
+            <button class="google-login-btn" onclick="authManager.signInWithGoogle()">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google ile Giriş Yap
+            </button>
+            <div class="loading hidden" id="loginLoading">
+                <div class="spinner"></div>
+                <p>Giriş yapılıyor...</p>
             </div>
-            <div class="stat-card">
-                <h3 id="completedTasks">0</h3>
-                <p>Tamamlanan</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="todayTasks">0</h3>
-                <p>Bugünkü Görevler</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="completionRate">0%</h3>
-                <p>Tamamlanma Oranı</p>
-            </div>
-        </div>
-
-        <div class="categories-nav">
-            <button class="category-btn active" data-category="all">📋 Tümü</button>
-            <button class="category-btn" data-category="spor">🏋️ Spor</button>
-            <button class="category-btn" data-category="dil">🗣️ Dil</button>
-            <button class="category-btn" data-category="beslenme">🥗 Beslenme</button>
-            <button class="category-btn" data-category="temizlik">🧹 Temizlik</button>
-            <button class="category-btn" data-category="is">💼 İş</button>
-            <button class="category-btn" data-category="ekonomi">💰 Ekonomi</button>
-            <button class="category-btn" data-category="kitap">📚 Kitap</button>
-        </div>
-
-        <div class="main-content">
-            <div class="card">
-                <h2>
-                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"></path>
-                    </svg>
-                    Yeni Görev Ekle
-                </h2>
-                <form id="taskForm">
-                    <div class="form-group">
-                        <label>Görev Başlığı</label>
-                        <input type="text" id="taskTitle" placeholder="Örn: Sabah koşusu" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Açıklama</label>
-                        <textarea id="taskDescription" placeholder="Görev detayları..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Kategori</label>
-                        <select id="taskCategory" required>
-                            <option value="">Kategori Seçin</option>
-                            <option value="spor">🏋️ Spor</option>
-                            <option value="dil">🗣️ Dil</option>
-                            <option value="beslenme">🥗 Beslenme</option>
-                            <option value="temizlik">🧹 Temizlik</option>
-                            <option value="is">💼 İş</option>
-                            <option value="ekonomi">💰 Ekonomi</option>
-                            <option value="kitap">📚 Kitap</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Tarih</label>
-                            <input type="date" id="taskDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Saat</label>
-                            <input type="time" id="taskTime" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Süre (Dakika)</label>
-                            <input type="number" id="taskDuration" placeholder="30" min="1">
-                        </div>
-                        <div class="form-group">
-                            <label>Öncelik</label>
-                            <select id="taskPriority">
-                                <option value="low">Düşük</option>
-                                <option value="medium" selected>Orta</option>
-                                <option value="high">Yüksek</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tekrar</label>
-                        <select id="taskRepeat">
-                            <option value="none">Tekrarlanmaz</option>
-                            <option value="daily">Her Gün</option>
-                            <option value="weekly">Her Hafta</option>
-                            <option value="monthly">Her Ay</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn">Görev Ekle</button>
-                </form>
-            </div>
-
-            <div class="card">
-                <h2>
-                    <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                    </svg>
-                    Görevlerim
-                </h2>
-
-                <div class="filter-section">
-                    <button class="filter-btn active" data-filter="all">Tümü</button>
-                    <button class="filter-btn" data-filter="today">Bugün</button>
-                    <button class="filter-btn" data-filter="week">Bu Hafta</button>
-                    <button class="filter-btn" data-filter="pending">Bekleyen</button>
-                    <button class="filter-btn" data-filter="completed">Tamamlanan</button>
-                </div>
-
-                <div id="tasksList" class="tasks-list">
-                    <div class="empty-state">
-                        <svg fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        <p>Henüz görev eklenmemiş</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" style="margin-top: 30px;">
-            <h2>📅 Haftalık Görünüm</h2>
-            <div id="weeklyView" class="weekly-view"></div>
         </div>
     </div>
 
+    <!-- Main App -->
+    <div id="mainApp" class="container hidden">
+        <!-- User Info -->
+        <div class="user-info">
+            <img id="userAvatar" class="user-avatar" src="" alt="User">
+            <div class="user-details">
+                <div class="user-name" id="userName"></div>
+                <div class="user-email" id="userEmail"></div>
+            </div>
+            <button class="logout-btn" onclick="authManager.signOut()">Çıkış Yap</button>
+        </div>
+
+        <div class="header">
+            <h1>🎯 Hayat Organizatörü Pro</h1>
+            <p>Görevler • Kanban Board • Notlar - Yaşamınızın her alanını sistematize edin</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="tasks">📋 Görevler</button>
+            <button class="nav-tab" data-tab="kanban">📊 Kanban Board</button>
+            <button class="nav-tab" data-tab="notes">📝 Notlar</button>
+        </div>
+
+        <!-- TASKS TAB -->
+        <div id="tasks-tab" class="tab-content active">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3 id="totalTasks">0</h3>
+                    <p>Toplam Görev</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="completedTasks">0</h3>
+                    <p>Tamamlanan</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="todayTasks">0</h3>
+                    <p>Bugünkü Görevler</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="completionRate">0%</h3>
+                    <p>Tamamlanma Oranı</p>
+                </div>
+            </div>
+
+            <div class="categories-nav">
+                <button class="category-btn active" data-category="all">📋 Tümü</button>
+                <button class="category-btn" data-category="spor">🏋️ Spor</button>
+                <button class="category-btn" data-category="dil">🗣️ Dil</button>
+                <button class="category-btn" data-category="beslenme">🥗 Beslenme</button>
+                <button class="category-btn" data-category="temizlik">🧹 Temizlik</button>
+                <button class="category-btn" data-category="is">💼 İş</button>
+                <button class="category-btn" data-category="ekonomi">💰 Ekonomi</button>
+                <button class="category-btn" data-category="kitap">📚 Kitap</button>
+            </div>
+
+            <div class="main-content">
+                <div class="card">
+                    <h2>
+                        <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"></path>
+                        </svg>
+                        Yeni Görev Ekle
+                    </h2>
+                    <form id="taskForm">
+                        <div class="form-group">
+                            <label>Görev Başlığı</label>
+                            <input type="text" id="taskTitle" placeholder="Örn: Sabah koşusu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Açıklama</label>
+                            <textarea id="taskDescription" placeholder="Görev detayları..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kategori</label>
+                            <select id="taskCategory" required>
+                                <option value="">Kategori Seçin</option>
+                                <option value="spor">🏋️ Spor</option>
+                                <option value="dil">🗣️ Dil</option>
+                                <option value="beslenme">🥗 Beslenme</option>
+                                <option value="temizlik">🧹 Temizlik</option>
+                                <option value="is">💼 İş</option>
+                                <option value="ekonomi">💰 Ekonomi</option>
+                                <option value="kitap">📚 Kitap</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tarih</label>
+                                <input type="date" id="taskDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Saat</label>
+                                <input type="time" id="taskTime" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Süre (Dakika)</label>
+                                <input type="number" id="taskDuration" placeholder="30" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Öncelik</label>
+                                <select id="taskPriority">
+                                    <option value="low">Düşük</option>
+                                    <option value="medium" selected>Orta</option>
+                                    <option value="high">Yüksek</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tekrar</label>
+                            <select id="taskRepeat">
+                                <option value="none">Tekrarlanmaz</option>
+                                <option value="daily">Her Gün</option>
+                                <option value="weekly">Her Hafta</option>
+                                <option value="monthly">Her Ay</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn">Görev Ekle</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>
+                        <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                        </svg>
+                        Görevlerim
+                    </h2>
+
+                    <div class="filter-section">
+                        <button class="filter-btn active" data-filter="all">Tümü</button>
+                        <button class="filter-btn" data-filter="today">Bugün</button>
+                        <button class="filter-btn" data-filter="week">Bu Hafta</button>
+                        <button class="filter-btn" data-filter="pending">Bekleyen</button>
+                        <button class="filter-btn" data-filter="completed">Tamamlanan</button>
+                    </div>
+
+                    <div id="tasksList" class="tasks-list"></div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 30px;">
+                <h2>📅 Haftalık Görünüm</h2>
+                <div id="weeklyView" class="weekly-view"></div>
+            </div>
+        </div>
+
+        <!-- KANBAN TAB -->
+        <div id="kanban-tab" class="tab-content">
+            <div class="card">
+                <h2>📊 Kanban Board</h2>
+                <p style="color: #666; margin-bottom: 20px;">Görevlerinizi sürükle-bırak ile yönetin</p>
+                <div class="kanban-board">
+                    <div class="kanban-column column-todo" data-status="todo">
+                        <div class="kanban-header">
+                            <h3>📝 Yapılacak</h3>
+                            <span class="kanban-count" id="todo-count">0</span>
+                        </div>
+                        <div class="kanban-tasks" id="kanban-todo"></div>
+                    </div>
+                    <div class="kanban-column column-progress" data-status="progress">
+                        <div class="kanban-header">
+                            <h3>⏳ Devam Ediyor</h3>
+                            <span class="kanban-count" id="progress-count">0</span>
+                        </div>
+                        <div class="kanban-tasks" id="kanban-progress"></div>
+                    </div>
+                    <div class="kanban-column column-done" data-status="review">
+                        <div class="kanban-header">
+                            <h3>👀 İnceleme</h3>
+                            <span class="kanban-count" id="review-count">0</span>
+                        </div>
+                        <div class="kanban-tasks" id="kanban-review"></div>
+                    </div>
+                    <div class="kanban-column column-completed" data-status="completed">
+                        <div class="kanban-header">
+                            <h3>✅ Tamamlandı</h3>
+                            <span class="kanban-count" id="completed-count">0</span>
+                        </div>
+                        <div class="kanban-tasks" id="kanban-completed"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTES TAB -->
+        <div id="notes-tab" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📝 Notlarım</h2>
+                    <button class="btn" style="width: auto; padding: 12px 25px;" onclick="notesManager.openNoteModal()">
+                        ➕ Yeni Not
+                    </button>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="noteSearch" placeholder="Notlarda ara...">
+                </div>
+
+                <div class="filter-section">
+                    <button class="filter-btn active" data-note-filter="all">Tümü</button>
+                    <button class="filter-btn" data-note-filter="pinned">📌 Sabitlenmiş</button>
+                    <button class="filter-btn" data-note-filter="red">🔴 Kırmızı</button>
+                    <button class="filter-btn" data-note-filter="blue">🔵 Mavi</button>
+                    <button class="filter-btn" data-note-filter="green">🟢 Yeşil</button>
+                    <button class="filter-btn" data-note-filter="yellow">🟡 Sarı</button>
+                </div>
+
+                <div id="notesGrid" class="notes-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note Modal -->
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="notesManager.closeNoteModal()">✕</button>
+            <h2 id="modalTitle">📝 Yeni Not</h2>
+            
+            <div class="note-editor">
+                <div class="form-group">
+                    <label>Başlık</label>
+                    <input type="text" id="noteTitle" placeholder="Not başlığı...">
+                </div>
+
+                <div class="form-group">
+                    <label>İçerik</label>
+                    <textarea id="noteContent" style="min-height: 200px;" placeholder="Notunuzu buraya yazın..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Etiketler (virgülle ayırın)</label>
+                    <input type="text" id="noteTags" placeholder="önemli, proje, fikir">
+                </div>
+
+                <div class="form-group">
+                    <label>Renk Seçin</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" data-color="red" style="background: #ff6b6b;"></div>
+                        <div class="color-option" data-color="blue" style="background: #4ecdc4;"></div>
+                        <div class="color-option" data-color="green" style="background: #1dd1a1;"></div>
+                        <div class="color-option" data-color="yellow" style="background: #feca57;"></div>
+                        <div class="color-option" data-color="purple" style="background: #a29bfe;"></div>
+                        <div class="color-option" data-color="orange" style="background: #fd79a8;"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="notePinned">
+                        <span>📌 Sabitle</span>
+                    </label>
+                </div>
+
+                <button class="btn" onclick="notesManager.saveNote()">💾 Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
+  authDomain: "shaplat-af37d.firebaseapp.com",
+  projectId: "shaplat-af37d",
+  storageBucket: "shaplat-af37d.firebasestorage.app",
+  messagingSenderId: "1032036004493",
+  appId: "1:1032036004493:web:1460aaed627384e88d28c4",
+  measurementId: "G-P3WYFFTGK4"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        window.firebaseApp = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, onSnapshot };
+    </script>
+
     <script>
-        // Veri yönetimi
-        class TaskManager {
+        // Auth Manager
+        class AuthManager {
             constructor() {
-                this.tasks = this.loadTasks();
-                this.currentFilter = 'all';
-                this.currentCategory = 'all';
+                this.currentUser = null;
                 this.init();
             }
 
             init() {
+                const { auth, onAuthStateChanged } = window.firebaseApp;
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        this.showMainApp();
+                        taskManager.loadUserData();
+                        notesManager.loadUserData();
+                    } else {
+                        this.currentUser = null;
+                        this.showLoginScreen();
+                    }
+                });
+            }
+
+            async signInWithGoogle() {
+                const { auth, provider, signInWithPopup } = window.firebaseApp;
+                const loginLoading = document.getElementById('loginLoading');
+                
+                try {
+                    loginLoading.classList.remove('hidden');
+                    const result = await signInWithPopup(auth, provider);
+                    this.currentUser = result.user;
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showNotification('Giriş yapılamadı: ' + error.message);
+                    loginLoading.classList.add('hidden');
+                }
+            }
+
+            async signOut() {
+                const { auth, signOut: fbSignOut } = window.firebaseApp;
+                try {
+                    await fbSignOut(auth);
+                    this.currentUser = null;
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    this.showNotification('Çıkış yapılamadı');
+                }
+            }
+
+            showMainApp() {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Display user info
+                document.getElementById('userName').textContent = this.currentUser.displayName;
+                document.getElementById('userEmail').textContent = this.currentUser.email;
+                document.getElementById('userAvatar').src = this.currentUser.photoURL;
+            }
+
+            showLoginScreen() {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+            }
+
+            showNotification(message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // Task Manager
+        class TaskManager {
+            constructor() {
+                this.tasks = [];
+                this.currentFilter = 'all';
+                this.currentCategory = 'all';
+                this.unsubscribe = null;
+            }
+
+            async loadUserData() {
+                const { db, collection, onSnapshot } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                
+                // Real-time listener
+                this.unsubscribe = onSnapshot(collection(db, 'users', userId, 'tasks'), (snapshot) => {
+                    this.tasks = [];
+                    snapshot.forEach((doc) => {
+                        this.tasks.push({ id: doc.id, ...doc.data() });
+                    });
+                    this.renderTasks();
+                    this.updateStats();
+                    this.renderWeeklyView();
+                    kanbanManager.renderKanban();
+                });
+
                 this.setupEventListeners();
-                this.renderTasks();
-                this.updateStats();
-                this.renderWeeklyView();
                 this.setDefaultDate();
             }
 
@@ -614,23 +1406,12 @@
                 document.getElementById('taskDate').value = today;
             }
 
-            loadTasks() {
-                const saved = localStorage.getItem('lifeTasks');
-                return saved ? JSON.parse(saved) : [];
-            }
-
-            saveTasks() {
-                localStorage.setItem('lifeTasks', JSON.stringify(this.tasks));
-            }
-
             setupEventListeners() {
-                // Form gönderimi
                 document.getElementById('taskForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.addTask();
                 });
 
-                // Kategori butonları
                 document.querySelectorAll('.category-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -640,7 +1421,6 @@
                     });
                 });
 
-                // Filtre butonları
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -651,9 +1431,11 @@
                 });
             }
 
-            addTask() {
+            async addTask() {
+                const { db, doc, setDoc } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                
                 const task = {
-                    id: Date.now(),
                     title: document.getElementById('taskTitle').value,
                     description: document.getElementById('taskDescription').value,
                     category: document.getElementById('taskCategory').value,
@@ -663,53 +1445,83 @@
                     priority: document.getElementById('taskPriority').value,
                     repeat: document.getElementById('taskRepeat').value,
                     completed: false,
+                    kanbanStatus: 'todo',
                     createdAt: new Date().toISOString()
                 };
 
-                this.tasks.push(task);
-                this.saveTasks();
-                this.renderTasks();
-                this.updateStats();
-                this.renderWeeklyView();
-                document.getElementById('taskForm').reset();
-                this.setDefaultDate();
-
-                // Başarı mesajı
-                this.showNotification('Görev başarıyla eklendi!');
-            }
-
-            deleteTask(id) {
-                if (confirm('Bu görevi silmek istediğinizden emin misiniz?')) {
-                    this.tasks = this.tasks.filter(task => task.id !== id);
-                    this.saveTasks();
-                    this.renderTasks();
-                    this.updateStats();
-                    this.renderWeeklyView();
-                    this.showNotification('Görev silindi!');
+                const taskId = Date.now().toString();
+                
+                try {
+                    await setDoc(doc(db, 'users', userId, 'tasks', taskId), task);
+                    document.getElementById('taskForm').reset();
+                    this.setDefaultDate();
+                    authManager.showNotification('Görev başarıyla eklendi!');
+                } catch (error) {
+                    console.error('Error adding task:', error);
+                    authManager.showNotification('Görev eklenirken hata oluştu');
                 }
             }
 
-            toggleComplete(id) {
+            async deleteTask(id) {
+                if (confirm('Bu görevi silmek istediğinizden emin misiniz?')) {
+                    const { db, doc, deleteDoc } = window.firebaseApp;
+                    const userId = authManager.currentUser.uid;
+                    
+                    try {
+                        await deleteDoc(doc(db, 'users', userId, 'tasks', id));
+                        authManager.showNotification('Görev silindi!');
+                    } catch (error) {
+                        console.error('Error deleting task:', error);
+                        authManager.showNotification('Görev silinirken hata oluştu');
+                    }
+                }
+            }
+
+            async toggleComplete(id) {
+                const { db, doc, setDoc } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
                 const task = this.tasks.find(t => t.id === id);
+                
                 if (task) {
                     task.completed = !task.completed;
                     task.completedAt = task.completed ? new Date().toISOString() : null;
-                    this.saveTasks();
-                    this.renderTasks();
-                    this.updateStats();
-                    this.showNotification(task.completed ? 'Tebrikler! Görev tamamlandı! 🎉' : 'Görev beklemede');
+                    if (task.completed) task.kanbanStatus = 'completed';
+                    
+                    try {
+                        await setDoc(doc(db, 'users', userId, 'tasks', id), task);
+                        authManager.showNotification(task.completed ? 'Tebrikler! Görev tamamlandı! 🎉' : 'Görev beklemede');
+                    } catch (error) {
+                        console.error('Error updating task:', error);
+                    }
+                }
+            }
+
+            async updateTaskStatus(taskId, newStatus) {
+                const { db, doc, setDoc } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                const task = this.tasks.find(t => t.id === taskId);
+                
+                if (task) {
+                    task.kanbanStatus = newStatus;
+                    if (newStatus === 'completed') task.completed = true;
+                    else task.completed = false;
+                    
+                    try {
+                        await setDoc(doc(db, 'users', userId, 'tasks', taskId), task);
+                        authManager.showNotification('Görev durumu güncellendi!');
+                    } catch (error) {
+                        console.error('Error updating task status:', error);
+                    }
                 }
             }
 
             filterTasks() {
                 let filtered = this.tasks;
 
-                // Kategori filtresi
                 if (this.currentCategory !== 'all') {
                     filtered = filtered.filter(task => task.category === this.currentCategory);
                 }
 
-                // Zaman filtresi
                 const today = new Date().toISOString().split('T')[0];
                 const weekLater = new Date();
                 weekLater.setDate(weekLater.getDate() + 7);
@@ -731,10 +1543,7 @@
                 }
 
                 return filtered.sort((a, b) => {
-                    // Önce tarih, sonra saat
-                    if (a.date !== b.date) {
-                        return a.date.localeCompare(b.date);
-                    }
+                    if (a.date !== b.date) return a.date.localeCompare(b.date);
                     return a.time.localeCompare(b.time);
                 });
             }
@@ -755,54 +1564,42 @@
                     return;
                 }
 
-                container.innerHTML = filtered.map(task => {
-                    const priorityText = {
-                        high: 'Yüksek',
-                        medium: 'Orta',
-                        low: 'Düşük'
-                    };
+                const priorityText = { high: 'Yüksek', medium: 'Orta', low: 'Düşük' };
+                const categoryEmojis = {
+                    spor: '🏋️', dil: '🗣️', beslenme: '🥗', temizlik: '🧹',
+                    is: '💼', ekonomi: '💰', kitap: '📚'
+                };
 
-                    const categoryEmojis = {
-                        spor: '🏋️',
-                        dil: '🗣️',
-                        beslenme: '🥗',
-                        temizlik: '🧹',
-                        is: '💼',
-                        ekonomi: '💰',
-                        kitap: '📚'
-                    };
-
-                    return `
-                        <div class="task-item ${task.completed ? 'completed' : ''} priority-${task.priority}">
-                            <div class="task-header">
-                                <div style="flex: 1;">
-                                    <span class="task-title">${task.title}</span>
-                                    <span class="task-category category-${task.category}">
-                                        ${categoryEmojis[task.category]} ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}
-                                    </span>
-                                    <span class="priority-badge priority-${task.priority}-badge">
-                                        ${priorityText[task.priority]}
-                                    </span>
-                                </div>
-                            </div>
-                            ${task.description ? `<div class="task-details">${task.description}</div>` : ''}
-                            <div class="task-time">
-                                <span>📅 ${this.formatDate(task.date)}</span>
-                                <span>🕐 ${task.time}</span>
-                                ${task.duration ? `<span>⏱️ ${task.duration} dk</span>` : ''}
-                                ${task.repeat !== 'none' ? `<span>🔄 ${this.getRepeatText(task.repeat)}</span>` : ''}
-                            </div>
-                            <div class="task-actions">
-                                <button class="btn-complete" onclick="taskManager.toggleComplete(${task.id})">
-                                    ${task.completed ? '↩️ Geri Al' : '✓ Tamamla'}
-                                </button>
-                                <button class="btn-delete" onclick="taskManager.deleteTask(${task.id})">
-                                    🗑️ Sil
-                                </button>
+                container.innerHTML = filtered.map(task => `
+                    <div class="task-item ${task.completed ? 'completed' : ''} priority-${task.priority}">
+                        <div class="task-header">
+                            <div style="flex: 1;">
+                                <span class="task-title">${task.title}</span>
+                                <span class="task-category category-${task.category}">
+                                    ${categoryEmojis[task.category]} ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}
+                                </span>
+                                <span class="priority-badge priority-${task.priority}-badge">
+                                    ${priorityText[task.priority]}
+                                </span>
                             </div>
                         </div>
-                    `;
-                }).join('');
+                        ${task.description ? `<div class="task-details">${task.description}</div>` : ''}
+                        <div class="task-time">
+                            <span>📅 ${this.formatDate(task.date)}</span>
+                            <span>🕐 ${task.time}</span>
+                            ${task.duration ? `<span>⏱️ ${task.duration} dk</span>` : ''}
+                            ${task.repeat !== 'none' ? `<span>🔄 ${this.getRepeatText(task.repeat)}</span>` : ''}
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-complete" onclick="taskManager.toggleComplete('${task.id}')">
+                                ${task.completed ? '↩️ Geri Al' : '✓ Tamamla'}
+                            </button>
+                            <button class="btn-delete" onclick="taskManager.deleteTask('${task.id}')">
+                                🗑️ Sil
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
             }
 
             formatDate(dateStr) {
@@ -811,7 +1608,6 @@
                 today.setHours(0, 0, 0, 0);
                 const taskDate = new Date(date);
                 taskDate.setHours(0, 0, 0, 0);
-
                 const diffTime = taskDate - today;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -825,12 +1621,7 @@
             }
 
             getRepeatText(repeat) {
-                const texts = {
-                    daily: 'Her Gün',
-                    weekly: 'Her Hafta',
-                    monthly: 'Her Ay',
-                    none: ''
-                };
+                const texts = { daily: 'Her Gün', weekly: 'Her Hafta', monthly: 'Her Ay', none: '' };
                 return texts[repeat] || '';
             }
 
@@ -870,60 +1661,323 @@
                 }
                 container.innerHTML = html;
             }
+        }
 
-            showNotification(message) {
-                // Basit bir bildirim sistemi
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    padding: 15px 25px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                    z-index: 1000;
-                    animation: slideIn 0.3s ease;
-                `;
-                notification.textContent = message;
-                document.body.appendChild(notification);
+        // Kanban Manager
+        class KanbanManager {
+            constructor() {
+                this.draggedTask = null;
+            }
 
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }, 3000);
+            renderKanban() {
+                const tasks = taskManager.tasks;
+                const statuses = ['todo', 'progress', 'review', 'completed'];
+
+                statuses.forEach(status => {
+                    const container = document.getElementById(`kanban-${status}`);
+                    const filteredTasks = tasks.filter(t => t.kanbanStatus === status);
+                    
+                    document.getElementById(`${status}-count`).textContent = filteredTasks.length;
+
+                    if (filteredTasks.length === 0) {
+                        container.innerHTML = '<div class="empty-state"><p>Görev yok</p></div>';
+                        return;
+                    }
+
+                    container.innerHTML = filteredTasks.map(task => `
+                        <div class="kanban-task priority-${task.priority}" draggable="true" data-task-id="${task.id}">
+                            <div class="task-title">${task.title}</div>
+                            ${task.description ? `<div class="task-details">${task.description}</div>` : ''}
+                            <div class="task-time">
+                                <span>📅 ${taskManager.formatDate(task.date)}</span>
+                                <span>🕐 ${task.time}</span>
+                            </div>
+                            <span class="task-category category-${task.category}" style="display: inline-block; margin-top: 10px;">
+                                ${task.category.charAt(0).toUpperCase() + task.category.slice(1)}
+                            </span>
+                        </div>
+                    `).join('');
+                });
+
+                this.setupDragAndDrop();
+            }
+
+            setupDragAndDrop() {
+                const tasks = document.querySelectorAll('.kanban-task');
+                const columns = document.querySelectorAll('.kanban-column');
+
+                tasks.forEach(task => {
+                    task.addEventListener('dragstart', (e) => {
+                        this.draggedTask = task;
+                        task.classList.add('dragging');
+                    });
+
+                    task.addEventListener('dragend', () => {
+                        task.classList.remove('dragging');
+                        this.draggedTask = null;
+                    });
+                });
+
+                columns.forEach(column => {
+                    column.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        column.classList.add('drag-over');
+                    });
+
+                    column.addEventListener('dragleave', () => {
+                        column.classList.remove('drag-over');
+                    });
+
+                    column.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        column.classList.remove('drag-over');
+                        
+                        if (this.draggedTask) {
+                            const taskId = this.draggedTask.dataset.taskId;
+                            const newStatus = column.dataset.status;
+                            taskManager.updateTaskStatus(taskId, newStatus);
+                        }
+                    });
+                });
             }
         }
 
-        // Animasyonlar
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
+        // Notes Manager
+        class NotesManager {
+            constructor() {
+                this.notes = [];
+                this.currentFilter = 'all';
+                this.currentNoteId = null;
+                this.selectedColor = 'red';
+                this.unsubscribe = null;
             }
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
 
-        // Uygulamayı başlat
+            async loadUserData() {
+                const { db, collection, onSnapshot } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                
+                // Real-time listener
+                this.unsubscribe = onSnapshot(collection(db, 'users', userId, 'notes'), (snapshot) => {
+                    this.notes = [];
+                    snapshot.forEach((doc) => {
+                        this.notes.push({ id: doc.id, ...doc.data() });
+                    });
+                    this.renderNotes();
+                });
+
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.getElementById('noteSearch').addEventListener('input', (e) => {
+                    this.searchNotes(e.target.value);
+                });
+
+                document.querySelectorAll('[data-note-filter]').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('[data-note-filter]').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.noteFilter;
+                        this.renderNotes();
+                    });
+                });
+
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                        e.target.classList.add('selected');
+                        this.selectedColor = e.target.dataset.color;
+                    });
+                });
+            }
+
+            openNoteModal(noteId = null) {
+                this.currentNoteId = noteId;
+                const modal = document.getElementById('noteModal');
+                
+                if (noteId) {
+                    const note = this.notes.find(n => n.id === noteId);
+                    if (note) {
+                        document.getElementById('modalTitle').textContent = '✏️ Notu Düzenle';
+                        document.getElementById('noteTitle').value = note.title;
+                        document.getElementById('noteContent').value = note.content;
+                        document.getElementById('noteTags').value = note.tags.join(', ');
+                        document.getElementById('notePinned').checked = note.pinned;
+                        this.selectedColor = note.color;
+                        
+                        document.querySelectorAll('.color-option').forEach(o => o.classList.remove('selected'));
+                        document.querySelector(`.color-option[data-color="${note.color}"]`).classList.add('selected');
+                    }
+                } else {
+                    document.getElementById('modalTitle').textContent = '📝 Yeni Not';
+                    document.getElementById('noteTitle').value = '';
+                    document.getElementById('noteContent').value = '';
+                    document.getElementById('noteTags').value = '';
+                    document.getElementById('notePinned').checked = false;
+                }
+                
+                modal.classList.add('active');
+            }
+
+            closeNoteModal() {
+                document.getElementById('noteModal').classList.remove('active');
+                this.currentNoteId = null;
+            }
+
+            async saveNote() {
+                const { db, doc, setDoc } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                
+                const title = document.getElementById('noteTitle').value.trim();
+                const content = document.getElementById('noteContent').value.trim();
+                const tags = document.getElementById('noteTags').value.split(',').map(t => t.trim()).filter(t => t);
+                const pinned = document.getElementById('notePinned').checked;
+
+                if (!title || !content) {
+                    authManager.showNotification('Başlık ve içerik gerekli!');
+                    return;
+                }
+
+                const noteData = {
+                    title,
+                    content,
+                    tags,
+                    color: this.selectedColor,
+                    pinned,
+                    updatedAt: new Date().toISOString()
+                };
+
+                const noteId = this.currentNoteId || Date.now().toString();
+                
+                if (!this.currentNoteId) {
+                    noteData.createdAt = new Date().toISOString();
+                }
+
+                try {
+                    await setDoc(doc(db, 'users', userId, 'notes', noteId), noteData);
+                    this.closeNoteModal();
+                    authManager.showNotification('Not kaydedildi!');
+                } catch (error) {
+                    console.error('Error saving note:', error);
+                    authManager.showNotification('Not kaydedilirken hata oluştu');
+                }
+            }
+
+            async deleteNote(id) {
+                if (confirm('Bu notu silmek istediğinizden emin misiniz?')) {
+                    const { db, doc, deleteDoc } = window.firebaseApp;
+                    const userId = authManager.currentUser.uid;
+                    
+                    try {
+                        await deleteDoc(doc(db, 'users', userId, 'notes', id));
+                        authManager.showNotification('Not silindi!');
+                    } catch (error) {
+                        console.error('Error deleting note:', error);
+                        authManager.showNotification('Not silinirken hata oluştu');
+                    }
+                }
+            }
+
+            async togglePin(id) {
+                const { db, doc, setDoc } = window.firebaseApp;
+                const userId = authManager.currentUser.uid;
+                const note = this.notes.find(n => n.id === id);
+                
+                if (note) {
+                    note.pinned = !note.pinned;
+                    
+                    try {
+                        await setDoc(doc(db, 'users', userId, 'notes', id), note);
+                    } catch (error) {
+                        console.error('Error toggling pin:', error);
+                    }
+                }
+            }
+
+            searchNotes(query) {
+                const filtered = this.notes.filter(note => 
+                    note.title.toLowerCase().includes(query.toLowerCase()) ||
+                    note.content.toLowerCase().includes(query.toLowerCase()) ||
+                    note.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+                );
+                this.renderFilteredNotes(filtered);
+            }
+
+            renderNotes() {
+                let filtered = this.notes;
+
+                if (this.currentFilter === 'pinned') {
+                    filtered = filtered.filter(n => n.pinned);
+                } else if (this.currentFilter !== 'all') {
+                    filtered = filtered.filter(n => n.color === this.currentFilter);
+                }
+
+                this.renderFilteredNotes(filtered);
+            }
+
+            renderFilteredNotes(notes) {
+                const container = document.getElementById('notesGrid');
+                
+                const sortedNotes = notes.sort((a, b) => {
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
+                });
+
+                if (sortedNotes.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>Not bulunamadı</p></div>';
+                    return;
+                }
+
+                container.innerHTML = sortedNotes.map(note => `
+                    <div class="note-card note-color-${note.color} ${note.pinned ? 'pinned' : ''}" 
+                         onclick="notesManager.openNoteModal('${note.id}')">
+                        <div class="note-header">
+                            <div>
+                                <div class="note-title">${note.title}</div>
+                                <div class="note-date">${new Date(note.updatedAt).toLocaleDateString('tr-TR')}</div>
+                            </div>
+                        </div>
+                        <div class="note-content">${note.content.substring(0, 150)}${note.content.length > 150 ? '...' : ''}</div>
+                        ${note.tags.length > 0 ? `
+                            <div class="note-tags">
+                                ${note.tags.map(tag => `<span class="note-tag">#${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="note-actions" onclick="event.stopPropagation()">
+                            <button onclick="notesManager.togglePin('${note.id}')" style="background: #feca57; color: white;">
+                                ${note.pinned ? '📍 Çöz' : '📌 Sabitle'}
+                            </button>
+                            <button onclick="notesManager.deleteNote('${note.id}')" style="background: #f44336; color: white;">
+                                🗑️ Sil
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                e.target.classList.add('active');
+                const tabName = e.target.dataset.tab;
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                if (tabName === 'kanban') {
+                    kanbanManager.renderKanban();
+                }
+            });
+        });
+
+        // Initialize managers
+        const authManager = new AuthManager();
         const taskManager = new TaskManager();
+        const kanbanManager = new KanbanManager();
+        const notesManager = new NotesManager();
     </script>
 </body>
 </html>
