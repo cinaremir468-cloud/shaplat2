@@ -974,7 +974,7 @@
         <div class="login-card">
             <h1>🎯 Hayat Organizatörü Pro</h1>
             <p>Görevlerinizi ve notlarınızı bulutta saklayın</p>
-            <button class="google-login-btn" onclick="authManager.signInWithGoogle()">
+            <button class="google-login-btn" onclick="window.authManager && window.authManager.signInWithGoogle()">
                 <svg class="google-icon" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -999,7 +999,7 @@
                 <div class="user-name" id="userName"></div>
                 <div class="user-email" id="userEmail"></div>
             </div>
-            <button class="logout-btn" onclick="authManager.signOut()">Çıkış Yap</button>
+            <button class="logout-btn" onclick="window.authManager && window.authManager.signOut()">Çıkış Yap</button>
         </div>
 
         <div class="header">
@@ -1189,7 +1189,7 @@
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>📝 Notlarım</h2>
-                    <button class="btn" style="width: auto; padding: 12px 25px;" onclick="notesManager.openNoteModal()">
+                    <button class="btn" style="width: auto; padding: 12px 25px;" onclick="window.notesManager && window.notesManager.openNoteModal()">
                         ➕ Yeni Not
                     </button>
                 </div>
@@ -1215,7 +1215,7 @@
     <!-- Note Modal -->
     <div id="noteModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="notesManager.closeNoteModal()">✕</button>
+            <button class="modal-close" onclick="window.notesManager && window.notesManager.closeNoteModal()">✕</button>
             <h2 id="modalTitle">📝 Yeni Not</h2>
             
             <div class="note-editor">
@@ -1253,7 +1253,7 @@
                     </label>
                 </div>
 
-                <button class="btn" onclick="notesManager.saveNote()">💾 Kaydet</button>
+                <button class="btn" onclick="window.notesManager && window.notesManager.saveNote()">💾 Kaydet</button>
             </div>
         </div>
     </div>
@@ -1266,7 +1266,7 @@
 
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
+          apiKey: "AIzaSyA3RDxe5y6p26adzao5aY8Dw-S4mFz_2GQ",
   authDomain: "shaplat-af37d.firebaseapp.com",
   projectId: "shaplat-af37d",
   storageBucket: "shaplat-af37d.firebasestorage.app",
@@ -1282,6 +1282,9 @@
         const provider = new GoogleAuthProvider();
 
         window.firebaseApp = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where, onSnapshot };
+        
+        // Dispatch event when Firebase is ready
+        window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
     <script>
@@ -1298,8 +1301,8 @@
                     if (user) {
                         this.currentUser = user;
                         this.showMainApp();
-                        taskManager.loadUserData();
-                        notesManager.loadUserData();
+                        if (window.taskManager) window.taskManager.loadUserData();
+                        if (window.notesManager) window.notesManager.loadUserData();
                     } else {
                         this.currentUser = null;
                         this.showLoginScreen();
@@ -1383,7 +1386,7 @@
 
             async loadUserData() {
                 const { db, collection, onSnapshot } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 
                 // Real-time listener
                 this.unsubscribe = onSnapshot(collection(db, 'users', userId, 'tasks'), (snapshot) => {
@@ -1394,7 +1397,7 @@
                     this.renderTasks();
                     this.updateStats();
                     this.renderWeeklyView();
-                    kanbanManager.renderKanban();
+                    if (window.kanbanManager) window.kanbanManager.renderKanban();
                 });
 
                 this.setupEventListeners();
@@ -1433,7 +1436,7 @@
 
             async addTask() {
                 const { db, doc, setDoc } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 
                 const task = {
                     title: document.getElementById('taskTitle').value,
@@ -1455,31 +1458,31 @@
                     await setDoc(doc(db, 'users', userId, 'tasks', taskId), task);
                     document.getElementById('taskForm').reset();
                     this.setDefaultDate();
-                    authManager.showNotification('Görev başarıyla eklendi!');
+                    window.authManager.showNotification('Görev başarıyla eklendi!');
                 } catch (error) {
                     console.error('Error adding task:', error);
-                    authManager.showNotification('Görev eklenirken hata oluştu');
+                    window.authManager.showNotification('Görev eklenirken hata oluştu');
                 }
             }
 
             async deleteTask(id) {
                 if (confirm('Bu görevi silmek istediğinizden emin misiniz?')) {
                     const { db, doc, deleteDoc } = window.firebaseApp;
-                    const userId = authManager.currentUser.uid;
+                    const userId = window.authManager.currentUser.uid;
                     
                     try {
                         await deleteDoc(doc(db, 'users', userId, 'tasks', id));
-                        authManager.showNotification('Görev silindi!');
+                        window.authManager.showNotification('Görev silindi!');
                     } catch (error) {
                         console.error('Error deleting task:', error);
-                        authManager.showNotification('Görev silinirken hata oluştu');
+                        window.authManager.showNotification('Görev silinirken hata oluştu');
                     }
                 }
             }
 
             async toggleComplete(id) {
                 const { db, doc, setDoc } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 const task = this.tasks.find(t => t.id === id);
                 
                 if (task) {
@@ -1489,7 +1492,7 @@
                     
                     try {
                         await setDoc(doc(db, 'users', userId, 'tasks', id), task);
-                        authManager.showNotification(task.completed ? 'Tebrikler! Görev tamamlandı! 🎉' : 'Görev beklemede');
+                        window.authManager.showNotification(task.completed ? 'Tebrikler! Görev tamamlandı! 🎉' : 'Görev beklemede');
                     } catch (error) {
                         console.error('Error updating task:', error);
                     }
@@ -1498,7 +1501,7 @@
 
             async updateTaskStatus(taskId, newStatus) {
                 const { db, doc, setDoc } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 const task = this.tasks.find(t => t.id === taskId);
                 
                 if (task) {
@@ -1508,7 +1511,7 @@
                     
                     try {
                         await setDoc(doc(db, 'users', userId, 'tasks', taskId), task);
-                        authManager.showNotification('Görev durumu güncellendi!');
+                        window.authManager.showNotification('Görev durumu güncellendi!');
                     } catch (error) {
                         console.error('Error updating task status:', error);
                     }
@@ -1591,10 +1594,10 @@
                             ${task.repeat !== 'none' ? `<span>🔄 ${this.getRepeatText(task.repeat)}</span>` : ''}
                         </div>
                         <div class="task-actions">
-                            <button class="btn-complete" onclick="taskManager.toggleComplete('${task.id}')">
+                            <button class="btn-complete" onclick="window.taskManager && window.taskManager.toggleComplete('${task.id}')">
                                 ${task.completed ? '↩️ Geri Al' : '✓ Tamamla'}
                             </button>
-                            <button class="btn-delete" onclick="taskManager.deleteTask('${task.id}')">
+                            <button class="btn-delete" onclick="window.taskManager && window.taskManager.deleteTask('${task.id}')">
                                 🗑️ Sil
                             </button>
                         </div>
@@ -1670,7 +1673,7 @@
             }
 
             renderKanban() {
-                const tasks = taskManager.tasks;
+                const tasks = window.taskManager ? window.taskManager.tasks : [];
                 const statuses = ['todo', 'progress', 'review', 'completed'];
 
                 statuses.forEach(status => {
@@ -1689,7 +1692,7 @@
                             <div class="task-title">${task.title}</div>
                             ${task.description ? `<div class="task-details">${task.description}</div>` : ''}
                             <div class="task-time">
-                                <span>📅 ${taskManager.formatDate(task.date)}</span>
+                                <span>📅 ${window.taskManager.formatDate(task.date)}</span>
                                 <span>🕐 ${task.time}</span>
                             </div>
                             <span class="task-category category-${task.category}" style="display: inline-block; margin-top: 10px;">
@@ -1732,10 +1735,10 @@
                         e.preventDefault();
                         column.classList.remove('drag-over');
                         
-                        if (this.draggedTask) {
+                        if (this.draggedTask && window.taskManager) {
                             const taskId = this.draggedTask.dataset.taskId;
                             const newStatus = column.dataset.status;
-                            taskManager.updateTaskStatus(taskId, newStatus);
+                            window.taskManager.updateTaskStatus(taskId, newStatus);
                         }
                     });
                 });
@@ -1754,7 +1757,7 @@
 
             async loadUserData() {
                 const { db, collection, onSnapshot } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 
                 // Real-time listener
                 this.unsubscribe = onSnapshot(collection(db, 'users', userId, 'notes'), (snapshot) => {
@@ -1826,7 +1829,7 @@
 
             async saveNote() {
                 const { db, doc, setDoc } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 
                 const title = document.getElementById('noteTitle').value.trim();
                 const content = document.getElementById('noteContent').value.trim();
@@ -1834,7 +1837,7 @@
                 const pinned = document.getElementById('notePinned').checked;
 
                 if (!title || !content) {
-                    authManager.showNotification('Başlık ve içerik gerekli!');
+                    window.authManager.showNotification('Başlık ve içerik gerekli!');
                     return;
                 }
 
@@ -1856,31 +1859,31 @@
                 try {
                     await setDoc(doc(db, 'users', userId, 'notes', noteId), noteData);
                     this.closeNoteModal();
-                    authManager.showNotification('Not kaydedildi!');
+                    window.authManager.showNotification('Not kaydedildi!');
                 } catch (error) {
                     console.error('Error saving note:', error);
-                    authManager.showNotification('Not kaydedilirken hata oluştu');
+                    window.authManager.showNotification('Not kaydedilirken hata oluştu');
                 }
             }
 
             async deleteNote(id) {
                 if (confirm('Bu notu silmek istediğinizden emin misiniz?')) {
                     const { db, doc, deleteDoc } = window.firebaseApp;
-                    const userId = authManager.currentUser.uid;
+                    const userId = window.authManager.currentUser.uid;
                     
                     try {
                         await deleteDoc(doc(db, 'users', userId, 'notes', id));
-                        authManager.showNotification('Not silindi!');
+                        window.authManager.showNotification('Not silindi!');
                     } catch (error) {
                         console.error('Error deleting note:', error);
-                        authManager.showNotification('Not silinirken hata oluştu');
+                        window.authManager.showNotification('Not silinirken hata oluştu');
                     }
                 }
             }
 
             async togglePin(id) {
                 const { db, doc, setDoc } = window.firebaseApp;
-                const userId = authManager.currentUser.uid;
+                const userId = window.authManager.currentUser.uid;
                 const note = this.notes.find(n => n.id === id);
                 
                 if (note) {
@@ -1931,7 +1934,7 @@
 
                 container.innerHTML = sortedNotes.map(note => `
                     <div class="note-card note-color-${note.color} ${note.pinned ? 'pinned' : ''}" 
-                         onclick="notesManager.openNoteModal('${note.id}')">
+                         onclick="window.notesManager && window.notesManager.openNoteModal('${note.id}')">
                         <div class="note-header">
                             <div>
                                 <div class="note-title">${note.title}</div>
@@ -1945,10 +1948,10 @@
                             </div>
                         ` : ''}
                         <div class="note-actions" onclick="event.stopPropagation()">
-                            <button onclick="notesManager.togglePin('${note.id}')" style="background: #feca57; color: white;">
+                            <button onclick="window.notesManager && window.notesManager.togglePin('${note.id}')" style="background: #feca57; color: white;">
                                 ${note.pinned ? '📍 Çöz' : '📌 Sabitle'}
                             </button>
-                            <button onclick="notesManager.deleteNote('${note.id}')" style="background: #f44336; color: white;">
+                            <button onclick="window.notesManager && window.notesManager.deleteNote('${note.id}')" style="background: #f44336; color: white;">
                                 🗑️ Sil
                             </button>
                         </div>
@@ -1967,17 +1970,41 @@
                 const tabName = e.target.dataset.tab;
                 document.getElementById(`${tabName}-tab`).classList.add('active');
                 
-                if (tabName === 'kanban') {
-                    kanbanManager.renderKanban();
+                if (tabName === 'kanban' && window.kanbanManager) {
+                    window.kanbanManager.renderKanban();
                 }
             });
         });
 
-        // Initialize managers
-        const authManager = new AuthManager();
-        const taskManager = new TaskManager();
-        const kanbanManager = new KanbanManager();
-        const notesManager = new NotesManager();
+        // Initialize managers after Firebase is ready
+        let authManager, taskManager, kanbanManager, notesManager;
+        
+        function initializeApp() {
+            if (!window.firebaseApp) {
+                console.log('Waiting for Firebase...');
+                return;
+            }
+            
+            authManager = new AuthManager();
+            taskManager = new TaskManager();
+            kanbanManager = new KanbanManager();
+            notesManager = new NotesManager();
+            
+            // Make managers globally available
+            window.authManager = authManager;
+            window.taskManager = taskManager;
+            window.kanbanManager = kanbanManager;
+            window.notesManager = notesManager;
+            
+            console.log('App initialized successfully!');
+        }
+
+        // Wait for Firebase to be ready
+        if (window.firebaseApp) {
+            initializeApp();
+        } else {
+            window.addEventListener('firebaseReady', initializeApp);
+        }
     </script>
 </body>
 </html>
